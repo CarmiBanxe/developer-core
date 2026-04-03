@@ -1,0 +1,61 @@
+[0;34m[15:38:16][0m 📖 Чтение реестра проектов...
+[0;34m[15:38:16][0m   → BANXE (тип: banxe, MiroFish: yes, сценарии: banking/FCA/fraud)
+[0;34m[15:38:16][0m   → ГИЙОН (тип: legal, MiroFish: yes, сценарии: court/judge/appeal)
+[0;34m[15:38:16][0m   → СС1 (тип: legal, MiroFish: yes, сценарии: court/judge/appeal)
+[0;34m[15:38:16][0m   → Developer (тип: core, MiroFish: yes, сценарии: ALL (MASTER))
+[0;34m[15:38:16][0m 📦 Синхронизация по реестру...
+[0;34m[15:38:16][0m Проект: СС1 (тип: legal, MiroFish: yes)
+[0;34m[15:38:16][0m   → ss1
+[0;32m✓[0m   Скопирован AGENTS.md
+[0;32m✓[0m   Скопирован docs/COLLAB.md
+[0;32m✓[0m   Скопирован docs/MCP-BEST-PRACTICES.md
+[0;32m✓[0m   Скопирован scripts/check-agent-instructions.sh
+[0;32m✓[0m   Скопирован .qoder/config.yml
+[0;32m✓[0m   ss1: context.md (Three-Partner Synergy)
+[0;34m[15:38:16][0m Проект: ГИЙОН (тип: legal, MiroFish: yes)
+[0;34m[15:38:16][0m   → guiyon
+[0;32m✓[0m   Скопирован AGENTS.md
+[0;32m✓[0m   Скопирован docs/COLLAB.md
+[0;32m✓[0m   Скопирован docs/MCP-BEST-PRACTICES.md
+[0;32m✓[0m   Скопирован scripts/check-agent-instructions.sh
+[0;32m✓[0m   Скопирован .qoder/config.yml
+[0;32m✓[0m   guiyon: context.md (Three-Partner Synergy)
+[0;34m[15:38:16][0m Проект: BANXE (тип: banxe, MiroFish: yes)
+[0;34m[15:38:16][0m   → vibe-coding
+[0;32m✓[0m   Скопирован AGENTS.md
+[0;32m✓[0m   Скопирован docs/COLLAB.md
+[0;32m✓[0m   Скопирован docs/MCP-BEST-PRACTICES.md
+[0;32m✓[0m   Скопирован scripts/check-agent-instructions.sh
+[0;32m✓[0m   Скопирован .qoder/config.yml
+[0;32m✓[0m   vibe-coding: context.md (Three-Partner Synergy)
+[0;34m[15:38:16][0m   → collaboration
+[0;32m✓[0m   Скопирован AGENTS.md
+[0;32m✓[0m   Скопирован docs/COLLAB.md
+[0;32m✓[0m   Скопирован docs/MCP-BEST-PRACTICES.md
+[0;32m✓[0m   Скопирован scripts/check-agent-instructions.sh
+[0;32m✓[0m   Скопирован .qoder/config.yml
+[0;32m✓[0m   collaboration: context.md (Three-Partner Synergy)
+[0;34m[15:38:16][0m   → MetaClaw
+[0;32m✓[0m   Скопирован AGENTS.md
+[0;32m✓[0m   Скопирован docs/COLLAB.md
+[0;32m✓[0m   Скопирован docs/MCP-BEST-PRACTICES.md
+[0;32m✓[0m   Скопирован scripts/check-agent-instructions.sh
+[0;32m✓[0m   Скопирован .qoder/config.yml
+[0;32m✓[0m   MetaClaw: context.md (Three-Partner Synergy)
+[0;34m[15:38:16][0m   → banxe-mirofish
+[0;32m✓[0m   Скопирован AGENTS.md
+[0;32m✓[0m   Скопирован docs/COLLAB.md
+[0;32m✓[0m   Скопирован docs/MCP-BEST-PRACTICES.md
+[0;32m✓[0m   Скопирован scripts/check-agent-instructions.sh
+[0;32m✓[0m   Скопирован .qoder/config.yml
+[0;32m✓[0m   banxe-mirofish: context.md (Three-Partner Synergy)
+[0;34m[15:38:16][0m Проект: Developer (тип: core, MiroFish: yes)
+[1;33m⚠[0m   Репозиторий /home/mmber/developer-core не найден, пропускаем...
+[0;34m[15:38:16][0m 🔄 Коммит и пуш изменений...
+[0;34m[15:38:16][0m   ss1: изменений нет
+[0;34m[15:38:16][0m   guiyon: изменений нет
+[0;34m[15:38:16][0m   vibe-coding: изменений нет
+[0;34m[15:38:16][0m   collaboration: изменений нет
+[0;34m[15:38:16][0m   MetaClaw: изменений нет
+[0;34m[15:38:16][0m   banxe-mirofish: изменений нет
+[0;34m[15:38:16][0m ✅ Синхронизация завершена!
