@@ -75,14 +75,14 @@
 
 ## Project Registry
 
-| Project | Path | Type | Synergy Status | Notes |
-|---------|------|------|----------------|-------|
-| Banxe AI Bank | `~/vibe-coding/` | Primary | ✅ DEPLOYED | EMI/FCA compliance |
-| Collaboration | `~/collaboration/` | Infra | ✅ DEPLOYED | MCP configs, collab.sh |
-| MetaClaw | `~/MetaClaw/` | Module | ✅ DEPLOYED | Crypto AML |
-| GUIYON | `~/guiyon/` | Legal | ⏳ PENDING | Civil law (France) |
-| SS1 | `~/ss1/` | Legal | ⏳ PENDING | Criminal law, GUIYON subproject |
-| Developer | `~/developer/` | Core | ACTIVE | This repository |
+| Project | Path | Type | Synergy Status | Commit |
+|---------|------|------|----------------|--------|
+| Banxe AI Bank | `~/vibe-coding/` | Primary | ✅ DEPLOYED | dcdbf45 |
+| Collaboration | `~/collaboration/` | Infra | ✅ DEPLOYED | 4018078 |
+| MetaClaw | `~/MetaClaw/` | Module | ✅ DEPLOYED | 141d421 |
+| GUIYON | `~/guiyon/` | Legal | ✅ DEPLOYED | 6a2bc2e |
+| SS1 | `~/ss1/` | Legal | ✅ DEPLOYED | 7917d17 |
+| Developer | `~/developer/` | Core | ACTIVE | 5ffcfcc |
 
 ---
 
@@ -205,12 +205,13 @@ wsl:
 
 | Metric | Value | Target | Status |
 |--------|-------|--------|--------|
-| Repositories covered | 3/6 | 6/6 | Phase 1 complete |
+| Repositories covered | 6/6 | 6/6 | ✅ ALL DEPLOYED |
 | Components created | 12 | 15+ | On track |
-| Sync scripts tested | 3/3 | 3/3 | ✅ All passed |
-| GitHub repos pushed | 0/4 | 4/4 | Auth pending |
-| Documentation pages | 6 | 10+ | In progress |
-| Phase 1 deployment | 100% | 100% | ✅ COMPLETE |
+| Sync scripts tested | 6/6 | 6/6 | ✅ All passed |
+| GitHub repos pushed | 0/6 | 6/6 | Auth pending |
+| Documentation pages | 7 | 10+ | In progress |
+| Phase 1 deployment (Banxe) | 100% | 100% | ✅ COMPLETE |
+| Phase 2 deployment (Legal) | 100% | 100% | ✅ COMPLETE |
 
 ---
 
@@ -222,32 +223,29 @@ wsl:
 2. ~~**Test synergy in vibe-coding**~~ ✅ VERIFIED
 3. ~~**Deploy to collaboration/**~~ ✅ COMPLETE
 4. ~~**Deploy to MetaClaw/**~~ ✅ COMPLETE
+5. ~~**Deploy to guiyon/**~~ ✅ COMPLETE
+6. ~~**Deploy to ss1/**~~ ✅ COMPLETE
 
 ### Pending
 
-5. **Push developer to GitHub**
+7. **Push all repos to GitHub**
    ```bash
-   git remote add origin git@github.com:CarmiBanxe/developer.git
-   git push -u origin master
-   ```
-
-6. **Phase 2: Legal Projects**
-   ```bash
-   bash scripts/sync-to-project.sh guiyon
-   bash scripts/sync-to-project.sh ss1
-   ```
-
-7. **Push synced projects to GitHub**
-   ```bash
-   # vibe-coding
+   # Developer Core
+   cd ~/developer && git push
+   
+   # Banxe Group
    cd ~/vibe-coding && git push
-   
-   # collaboration
    cd ~/collaboration && git push
-   
-   # MetaClaw
    cd ~/MetaClaw && git push
+   
+   # Legal Group
+   cd ~/guiyon && git push
+   cd ~/ss1 && git push
    ```
+
+8. **Create remaining templates**
+   - `templates/project-template/` — new project bootstrap
+   - `agents/` — skills library
 
 ---
 
