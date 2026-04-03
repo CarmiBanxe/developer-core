@@ -1,21 +1,17 @@
 #!/bin/bash
-# sync-all.sh — Умная синхронизация общего стека по 4 проектам
+# sync-all.sh — Умная синхронизация общего стека с чтением из PROJECT-REGISTRY.csv
 # 
-# Матрица синхронизации:
-#   - developer-core → мастер-копия общего стека
-#   - Общий стек → все 6 репо
-#   - MiroFish → только Banxe-репо (vibe-coding, collaboration, MetaClaw, banxe-mirofish)
-#   - Legal-контекст → только guiyon и ss1
-#   - Banxe-контекст → только Banxe-репо
-#
 # Использование:
 #   bash ~/developer/scripts/sync-all.sh [--dry-run]
 #
+# Реестр проектов: ~/developer/docs/PROJECT-REGISTRY.csv
+# Формат: project|type|onboarded|repos|mirofish|status
 
 set -e
 
 SOURCE=~/developer
 DRY_RUN=false
+REGISTRY="$SOURCE/docs/PROJECT-REGISTRY.csv"
 
 # Парсинг аргументов
 if [[ "$1" == "--dry-run" ]]; then
@@ -30,7 +26,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Функция для логирования
+# Функции логирования
 log() {
     echo -e "${BLUE}[$(date '+%H:%M:%S')]${NC} $1"
 }
@@ -48,195 +44,163 @@ error() {
 }
 
 # ============================================
-# КОНФИГУРАЦИЯ СИНХРОНИЗАЦИИ
+# ЧТЕНИЕ РЕЕСТРА ПРОЕКТОВ
 # ============================================
 
-# Общий стек → ВСЕ 6 репо
-COMMON_FILES=(
-    "AGENTS.md"
-    "docs/COLLAB.md"
-    "docs/MCP-BEST-PRACTICES.md"
-    "scripts/check-agent-instructions.sh"
-    ".qoder/config.yml"
-)
+declare -A PROJECT_TYPES
+declare -A PROJECT_REPOS
+declare -A PROJECT_MIROFISH
 
-ALL_REPOS=(
-    "vibe-coding"
-    "collaboration"
-    "MetaClaw"
-    "guiyon"
-    "ss1"
-    "banxe-mirofish"
-)
-
-# MiroFish компоненты → только Banxe-репо
-MIROFISH_FILES=(
-    "docs/MIROFISH-SCENARIOS.md"
-)
-
-BANXE_REPOS=(
-    "vibe-coding"
-    "collaboration"
-    "MetaClaw"
-    "banxe-mirofish"
-)
-
-# Legal проекты → только guiyon и ss1
-LEGAL_REPOS=(
-    "guiyon"
-    "ss1"
-)
-
-# ============================================
-# СИНХРОНИЗАЦИЯ ОБЩЕГО СТЕКА
-# ============================================
-
-log "📦 Синхронизация общего стека..."
-
-for repo in "${ALL_REPOS[@]}"; do
-    TARGET=~/$(basename $repo)
+read_registry() {
+    log "📖 Чтение реестра проектов..."
     
-    if [[ ! -d "$TARGET" ]]; then
-        warning "Репозиторий $TARGET не найден, пропускаем..."
-        continue
+    if [[ ! -f "$REGISTRY" ]]; then
+        error "Реестр не найден: $REGISTRY"
+        exit 1
     fi
     
-    log "  → $repo"
+    local first_line=true
+    while IFS='|' read -r project type onboarded repos mirofish status; do
+        # Пропускаем заголовок
+        if [[ "$first_line" == "true" ]]; then
+            first_line=false
+            continue
+        fi
+        
+        # Пропускаем пустые строки и комментарии
+        [[ -z "$project" || "$project" =~ ^# ]] && continue
+        
+        # Сохраняем данные
+        PROJECT_TYPES["$project"]="$type"
+        PROJECT_REPOS["$project"]="$repos"
+        PROJECT_MIROFISH["$project"]="$mirofish"
+        
+        log "  → $project (тип: $type, MiroFish: $mirofish)"
+    done < "$REGISTRY"
+}
+
+# ============================================
+# СИНХРОНИЗАЦИЯ
+# ============================================
+
+sync_common_files() {
+    local repo=$1
+    local target=~/$(basename $repo)
+    
+    COMMON_FILES=(
+        "AGENTS.md"
+        "docs/COLLAB.md"
+        "docs/MCP-BEST-PRACTICES.md"
+        "scripts/check-agent-instructions.sh"
+        ".qoder/config.yml"
+    )
     
     for file in "${COMMON_FILES[@]}"; do
         SOURCE_FILE="$SOURCE/$file"
-        TARGET_DIR="$TARGET/$(dirname $file)"
         
         if [[ ! -f "$SOURCE_FILE" ]]; then
             warning "  Файл $file не найден в источнике"
             continue
         fi
         
-        mkdir -p "$TARGET_DIR"
+        mkdir -p "$target/$(dirname $file)"
         
         if [[ "$DRY_RUN" == "true" ]]; then
             echo "    [DRY] cp $file → $repo/"
         else
-            cp "$SOURCE_FILE" "$TARGET/$file"
+            cp "$SOURCE_FILE" "$target/$file"
             success "  Скопирован $file"
         fi
     done
-done
+}
 
-# ============================================
-# СИНХРОНИЗАЦИЯ MIROFISH (только Banxe)
-# ============================================
-
-log "🐟 Синхронизация MiroFish компонентов (Banxe projects)..."
-
-for repo in "${BANXE_REPOS[@]}"; do
-    TARGET=~/$(basename $repo)
+sync_mirofish_files() {
+    local repo=$1
+    local target=~/$(basename $repo)
     
-    if [[ ! -d "$TARGET" ]]; then
-        warning "Репозиторий $TARGET не найден, пропускаем..."
-        continue
-    fi
-    
-    log "  → $repo"
+    MIROFISH_FILES=(
+        "docs/MIROFISH-SCENARIOS.md"
+    )
     
     for file in "${MIROFISH_FILES[@]}"; do
         SOURCE_FILE="$SOURCE/$file"
-        TARGET_DIR="$TARGET/$(dirname $file)"
         
         if [[ ! -f "$SOURCE_FILE" ]]; then
             warning "  Файл $file не найден в источнике"
             continue
         fi
         
-        mkdir -p "$TARGET_DIR"
+        mkdir -p "$target/$(dirname $file)"
         
         if [[ "$DRY_RUN" == "true" ]]; then
             echo "    [DRY] cp $file → $repo/"
         else
-            cp "$SOURCE_FILE" "$TARGET/$file"
+            cp "$SOURCE_FILE" "$target/$file"
             success "  Скопирован $file"
         fi
     done
-done
+}
 
-# ============================================
-# СИНХРОНИЗАЦИЯ CONTEXT.MD (разные версии)
-# ============================================
-
-log "📄 Синхронизация .qoder/context.md..."
-
-# Banxe-версия (с MiroFish)
-log "  Banxe-версия (с MiroFish pipeline)..."
-BANXE_CONTEXT="$SOURCE/.qoder/context-banxe.md"
-
-if [[ -f "$BANXE_CONTEXT" ]]; then
-    for repo in "${BANXE_REPOS[@]}"; do
-        TARGET=~/$(basename $repo)
-        
-        if [[ ! -d "$TARGET" ]]; then
-            continue
-        fi
-        
-        if [[ "$DRY_RUN" == "true" ]]; then
-            echo "    [DRY] cp context-banxe.md → $repo/.qoder/context.md"
-        else
-            mkdir -p "$TARGET/.qoder"
-            cp "$BANXE_CONTEXT" "$TARGET/.qoder/context.md"
-            success "  $repo: context-banxe.md"
-        fi
-    done
-else
-    error "  context-banxe.md не найден!"
-fi
-
-# Legal-версия (без MiroFish)
-log "  Legal-версия (без MiroFish)..."
-LEGAL_CONTEXT="$SOURCE/.qoder/context-legal.md"
-
-if [[ -f "$LEGAL_CONTEXT" ]]; then
-    for repo in "${LEGAL_REPOS[@]}"; do
-        TARGET=~/$(basename $repo)
-        
-        if [[ ! -d "$TARGET" ]]; then
-            continue
-        fi
-        
-        if [[ "$DRY_RUN" == "true" ]]; then
-            echo "    [DRY] cp context-legal.md → $repo/.qoder/context.md"
-        else
-            mkdir -p "$TARGET/.qoder"
-            cp "$LEGAL_CONTEXT" "$TARGET/.qoder/context.md"
-            success "  $repo: context-legal.md"
-        fi
-    done
-else
-    error "  context-legal.md не найден!"
-fi
-
-# ============================================
-# КОММИТ И ПУШ
-# ============================================
-
-if [[ "$DRY_RUN" == "true" ]]; then
-    log "🔍 DRY RUN завершён. Для реальной синхронизации запустите без --dry-run"
-    exit 0
-fi
-
-log "🔄 Коммит и пуш изменений..."
-
-for repo in "${ALL_REPOS[@]}"; do
-    TARGET=~/$(basename $repo)
+sync_context() {
+    local repo=$1
+    local type=$2
+    local target=~/$(basename $repo)
     
-    if [[ ! -d "$TARGET" ]]; then
-        continue
+    case "$type" in
+        banxe)
+            CONTEXT_FILE="$SOURCE/.qoder/context-banxe.md"
+            if [[ -f "$CONTEXT_FILE" ]]; then
+                mkdir -p "$target/.qoder"
+                if [[ "$DRY_RUN" == "true" ]]; then
+                    echo "    [DRY] cp context-banxe.md → $repo/.qoder/context.md"
+                else
+                    cp "$CONTEXT_FILE" "$target/.qoder/context.md"
+                    success "  $repo: context-banxe.md (с MiroFish)"
+                fi
+            fi
+            ;;
+        legal)
+            CONTEXT_FILE="$SOURCE/.qoder/context-legal.md"
+            if [[ -f "$CONTEXT_FILE" ]]; then
+                mkdir -p "$target/.qoder"
+                if [[ "$DRY_RUN" == "true" ]]; then
+                    echo "    [DRY] cp context-legal.md → $repo/.qoder/context.md"
+                else
+                    cp "$CONTEXT_FILE" "$target/.qoder/context.md"
+                    success "  $repo: context-legal.md (без MiroFish)"
+                fi
+            fi
+            ;;
+        *)
+            CONTEXT_FILE="$SOURCE/.qoder/context-base.md"
+            if [[ -f "$CONTEXT_FILE" ]]; then
+                mkdir -p "$target/.qoder"
+                if [[ "$DRY_RUN" == "true" ]]; then
+                    echo "    [DRY] cp context-base.md → $repo/.qoder/context.md"
+                else
+                    cp "$CONTEXT_FILE" "$target/.qoder/context.md"
+                    success "  $repo: context-base.md"
+                fi
+            fi
+            ;;
+    esac
+}
+
+commit_and_push() {
+    local repo=$1
+    local target=~/$(basename $repo)
+    
+    if [[ ! -d "$target" ]]; then
+        return
     fi
     
-    cd "$TARGET"
+    cd "$target"
     
     # Проверяем есть ли изменения
     if git diff --quiet && git diff --cached --quiet; then
         log "  $repo: изменений нет"
-        continue
+        cd - > /dev/null
+        return
     fi
     
     log "  → $repo: коммит и пуш..."
@@ -245,7 +209,8 @@ for repo in "${ALL_REPOS[@]}"; do
     
     if git diff --cached --quiet; then
         log "    Нет изменений для коммита"
-        continue
+        cd - > /dev/null
+        return
     fi
     
     git commit -m "$(cat <<'EOF'
@@ -253,7 +218,7 @@ sync: Update shared stack from developer-core
 
 Components updated:
 - AGENTS.md (three-partner synergy)
-- .qoder/context.md (Banxe/Legal version)
+- .qoder/context.md (Banxe/Legal/Base version)
 - docs/COLLAB.md
 - docs/MCP-BEST-PRACTICES.md
 - .qoder/config.yml
@@ -271,16 +236,77 @@ EOF
     
     if git push origin "$DEFAULT_BRANCH" 2>/dev/null; then
         success "  $repo: запушено в $DEFAULT_BRANCH"
+    elif git push origin master 2>/dev/null; then
+        success "  $repo: запушено в master"
     else
-        # Пробуем master если main не сработал
-        if git push origin master 2>/dev/null; then
-            success "  $repo: запушено в master"
-        else
-            error "  $repo: ошибка пуша!"
-        fi
+        error "  $repo: ошибка пуша!"
     fi
     
     cd - > /dev/null
-done
+}
 
-log "✅ Синхронизация завершена!"
+# ============================================
+# ОСНОВНОЙ ЦИКЛ
+# ============================================
+
+main() {
+    read_registry
+    
+    log "📦 Синхронизация по реестру..."
+    
+    # Обрабатываем каждый проект из реестра
+    for project in "${!PROJECT_REPOS[@]}"; do
+        type="${PROJECT_TYPES[$project]}"
+        repos="${PROJECT_REPOS[$project]}"
+        mirofish="${PROJECT_MIROFISH[$project]}"
+        
+        log "Проект: $project (тип: $type, MiroFish: $mirofish)"
+        
+        # Разделяем репозитории по запятой
+        IFS=',' read -ra REPO_ARRAY <<< "$repos"
+        
+        for repo in "${REPO_ARRAY[@]}"; do
+            target=~/$(basename $repo)
+            
+            if [[ ! -d "$target" ]]; then
+                warning "  Репозиторий $target не найден, пропускаем..."
+                continue
+            fi
+            
+            log "  → $repo"
+            
+            # 1. Общий стек
+            sync_common_files "$repo"
+            
+            # 2. MiroFish (если banxe)
+            if [[ "$mirofish" == "yes" ]]; then
+                sync_mirofish_files "$repo"
+            fi
+            
+            # 3. Context по типу
+            sync_context "$repo" "$type"
+        done
+    done
+    
+    # Коммит и пуш
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log "🔍 DRY RUN завершён. Для реальной синхронизации запустите без --dry-run"
+        exit 0
+    fi
+    
+    log "🔄 Коммит и пуш изменений..."
+    
+    for project in "${!PROJECT_REPOS[@]}"; do
+        repos="${PROJECT_REPOS[$project]}"
+        
+        IFS=',' read -ra REPO_ARRAY <<< "$repos"
+        
+        for repo in "${REPO_ARRAY[@]}"; do
+            commit_and_push "$repo"
+        done
+    done
+    
+    log "✅ Синхронизация завершена!"
+}
+
+main
