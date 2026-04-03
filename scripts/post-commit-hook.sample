@@ -1,0 +1,35 @@
+#!/bin/bash
+# post-commit.sample — Template for auto-sync hook
+# 
+# To enable:
+#   1. Copy to .git/hooks/post-commit
+#   2. chmod +x .git/hooks/post-commit
+#   3. Ensure sync-all.sh exists at ~/developer/scripts/sync-all.sh
+#
+# This hook runs after every commit on master/main branch.
+# It triggers sync-all.sh to distribute changes to all projects.
+
+set -e
+
+# Get current branch
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Only run on master/main branch
+if [[ "$BRANCH" != "master" && "$BRANCH" != "main" ]]; then
+    exit 0
+fi
+
+# Check if sync-all.sh exists
+SYNC_SCRIPT=~/developer/scripts/sync-all.sh
+if [[ ! -f "$SYNC_SCRIPT" ]]; then
+    echo "⚠️  Warning: sync-all.sh not found at $SYNC_SCRIPT"
+    exit 0
+fi
+
+# Log the sync event
+echo "🔄 Post-commit hook triggered — running sync-all.sh..."
+
+# Run sync in background to avoid blocking commit
+nohup bash "$SYNC_SCRIPT" >> ~/developer/logs/sync-$(date +%Y%m%d-%H%M%S).log 2>&1 &
+
+echo "✅ Sync started in background (check ~/developer/logs/ for progress)"

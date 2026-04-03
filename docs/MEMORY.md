@@ -1,73 +1,51 @@
 # MEMORY.md — Developer Core Long-Term Memory
 
 **Repository:** `~/developer/`  
-**Last Updated:** 2026-04-03  
-**Version:** 1.0
+**Last Updated:** 2026-04-03 (Three-Partner Infrastructure Update)  
+**Version:** 3.0
 
 ---
 
-## Current State (2026-04-03 — 13:30)
+## Current State (2026-04-03 — Three-Partner Synergy Complete)
 
-### ✅ Completed
+### ✅ COMPLETED — Three-Partner Infrastructure Update
 
-1. **Developer Core Repository Created**
-   - Location: `~/developer/`
-   - Commit: `e323165` (latest)
-   - Status: ✅ PUSHED TO GITHUB (CarmiBanxe/developer)
+**Date:** 2026-04-03  
+**Architecture:** Claude Code + Qoder CLI + MiroFish for ALL projects
 
-2. **Core Components Deployed**
-   - `.qoder/config.yml` — WSL-optimized Qoder config
-   - `.qoder/context.md` — Execution contract template
-   - `AGENTS.md` — Agent instructions template
-   - `docs/COLLAB.md` — Single-terminal synergy v3.0
-   - `docs/MCP-BEST-PRACTICES.md` — MCP configuration guide
-   - `scripts/check-agent-instructions.sh` — Diagnostic tool
-   - `scripts/sync-to-project.sh` — Automated distribution
-   - `compliance/COMPLIANCE_ARCH.md` — FCA invariants contract
+1. **Unified Context Architecture**
+   - ✅ Deleted: `.qoder/context-banxe.md`, `context-legal.md`, `context-base.md`
+   - ✅ Created: Single `.qoder/context.md` for ALL projects
+   - ✅ Updated: `AGENTS.md v3.0` with three-partner documentation
+   - ✅ Updated: `PROJECT-REGISTRY.csv` with `mirofish=yes` for all projects
 
-3. **Documentation Created**
-   - `README.md` — Project overview
-   - `docs/SYNERGY-DEPLOYMENT.md` — Deployment plan (ACTIVE)
-   - `docs/SYNERGY-ROLLBACK.md` — Rollback procedures
-   - `docs/MEMORY.md` — This file
-   - `docs/ALL-PHASES-COMPLETE.md` — Final deployment report
-   - `docs/GITHUB-REGISTRY.md` — Repository registry
-   - `docs/GITHUB-SETUP.md` — GitHub creation guide
-   - `docs/GITHUB-FINAL-STEPS.md` — Manual UI checklist
-   - `docs/MIROFISH-INTEGRATION.md` — MiroFish partner integration plan
-   - `docs/MIROFISH-GITHUB-SETUP.md` — GitHub repos for MiroFish
-   - `docs/MIROFISH-DEPLOY-GMKTEC.md` — GMKtec/NucBox deployment guide
+2. **MiroFish Scenarios Deployed (6 Projects)**
+   - ✅ `vibe-coding/docs/MIROFISH-SCENARIOS.md` — Banking/FCA scenarios (HITL, fraud, UX, stress tests)
+   - ✅ `collaboration/docs/MIROFISH-SCENARIOS.md` — Multi-agent banking conflicts
+   - ✅ `MetaClaw/docs/MIROFISH-SCENARIOS.md` — Orchestration scaling (100→10000 users)
+   - ✅ `guiyon/docs/MIROFISH-SCENARIOS.md` — Court strategy (суд, апелляция, контраргументы)
+   - ✅ `ss1/docs/MIROFISH-SCENARIOS.md` — Appeal dynamics (апелляция, пересмотр, взыскание)
+   - ✅ `banxe-mirofish/docs/MIROFISH-SCENARIOS.md` — Master template library
+   - ✅ `developer/docs/MIROFISH-SCENARIOS.md` — Master index (all scenarios)
 
-4. **Phase 1 & 2 Deployment COMPLETE**
-   - ✅ `vibe-coding/` — sync commit `dcdbf45`
-   - ✅ `collaboration/` — sync commit `4018078`
-   - ✅ `MetaClaw/` — sync commit `141d421`
-   - ✅ `guiyon/` — sync commit `aa49077` (after SSH key removal)
-   - ✅ `ss1/` — sync commit `7917d17`
-   - ✅ `developer/` — sync commit `217f333`
-   - All projects verified with `check-agent-instructions.sh`
+3. **Automation Scripts**
+   - ✅ `scripts/sync-all.sh` — Reads from PROJECT-REGISTRY.csv, syncs to all repos
+   - ✅ `scripts/onboard-project.sh` — Onboards new projects with type-specific config
+   - ✅ `.git/hooks/post-commit` — Auto-triggers sync-all.sh after commits
 
-5. **MiroFish Integration Prepared**
-   - `mirofish/config-template.yml` — Base configuration
-   - `mirofish/install-mirofish.sh` — Installation script
-   - `mirofish/run-simulation.sh` — CLI runner
-   - `mirofish/scenarios/*.yml` — 7 pre-built scenarios
-   - `mirofish/README.md` — Quick start guide
+4. **Sync Protocol**
+   - ✅ `sync-all.sh` does NOT overwrite project-specific MIROFISH-SCENARIOS.md
+   - ✅ Each project maintains its own scenarios (not synced back to developer-core)
+   - ✅ developer-core contains MASTER templates only
 
-6. **Banxe MiroFish Repository Created**
-   - Location: `~/banxe-mirofish/`
-   - Commit: `729144c`
-   - Status: Ready for GitHub remote setup
-   - Visibility: PRIVATE (scenarios + reports)
-   - Components: `.qoder/`, AGENTS.md, CLAUDE.md, docs/COLLAB.md
-   - `mirofish/run-simulation.sh` — Simulation runner CLI
-   - `mirofish/scenarios/hitl-handoff.yml` — Scenario 1: HITL trust study
-   - `mirofish/scenarios/pre-fca-sandbox.yml` — Scenario 2: Compliance testing
-   - `mirofish/scenarios/fraud-social-eng.yml` — Scenario 3: Fraud patterns
-   - `mirofish/scenarios/gtm-reaction.yml` — Scenario 4: Market reaction
-   - `mirofish/scenarios/ux-validation.yml` — Scenario 5: UX validation
-   - `mirofish/scenarios/fraud-stress-test.yml` — Scenario 6: Stress testing
-   - `mirofish/scenarios/market-adoption.yml` — Scenario 7: Adoption curve
+5. **Git Commits & Pushes**
+   - ✅ developer-core: `ca7340b` — feat: Three-partner synergy infrastructure update
+   - ✅ vibe-coding: `8d820ce` — feat: Add MiroFish banking/FCA scenarios
+   - ✅ collaboration: `a1a16d1` — feat: Add MiroFish multi-agent banking conflict scenarios
+   - ✅ MetaClaw: `16dd8b1` — feat: Add MiroFish orchestration scaling scenarios
+   - ✅ guiyon: `f3b92ae` — feat: Add MiroFish court strategy scenarios
+   - ✅ ss1: `eefbb6a` — feat: Add MiroFish appeal dynamics scenarios
+   - ✅ banxe-mirofish: `0755284` — feat: Add MiroFish master template library
 
 ---
 
@@ -97,20 +75,114 @@
 
 ---
 
-## Project Registry
+## Project Registry (Updated 2026-04-03)
 
-| Project | Path | Type | Synergy Status | Commit |
-|---------|------|------|----------------|--------|
-| Banxe AI Bank | `~/vibe-coding/` | Primary | ✅ DEPLOYED | dcdbf45 |
-| Collaboration | `~/collaboration/` | Infra | ✅ DEPLOYED | 4018078 |
-| MetaClaw | `~/MetaClaw/` | Module | ✅ DEPLOYED | 141d421 |
-| GUIYON | `~/guiyon/` | Legal | ✅ DEPLOYED | 6a2bc2e |
-| SS1 | `~/ss1/` | Legal | ✅ DEPLOYED | 7917d17 |
-| Developer | `~/developer/` | Core | ACTIVE | 5ffcfcc |
+| Project | Path | Type | MiroFish | Scenarios | Commit | Status |
+|---------|------|------|----------|-----------|--------|--------|
+| Banxe AI Bank | `~/vibe-coding/` | banxe | ✅ | banking/FCA/fraud | 8d820ce | ✅ DEPLOYED |
+| Collaboration | `~/collaboration/` | banxe | ✅ | multi-agent conflicts | a1a16d1 | ✅ DEPLOYED |
+| MetaClaw | `~/MetaClaw/` | banxe | ✅ | orchestration scaling | 16dd8b1 | ✅ DEPLOYED |
+| GUIYON | `~/guiyon/` | legal | ✅ | court strategy | f3b92ae | ✅ DEPLOYED |
+| SS1 | `~/ss1/` | legal | ✅ | appeal dynamics | eefbb6a | ✅ DEPLOYED |
+| Banxe MiroFish | `~/banxe-mirofish/` | tool | ✅ | MASTER templates | 0755284 | ✅ DEPLOYED |
+| Developer Core | `~/developer/` | core | ✅ | ALL (MASTER index) | ca7340b | ✅ ACTIVE |
 
 ---
 
 ## Technical Decisions
+
+### 2026-04-03: Three-Partner Synergy Architecture (UNIVERSAL)
+
+**Decision:** MiroFish is a partner for ALL projects, not just Banxe
+
+**Architecture:**
+| Partner | Role | Activation | Scope |
+|---------|------|------------|-------|
+| **Claude Code** | Architect & Coordinator | Every session | Design, review, orchestration |
+| **Qoder CLI** | Executor | MCP auto-load | Implementation, edits, tests |
+| **MiroFish** | Simulator & Validator | Auto-trigger by keywords | Behavioral simulation, stress-testing |
+
+**Project-specific scenarios:**
+- **Banxe projects** (vibe-coding, collaboration, MetaClaw): HITL, FCA, fraud, UX validation, market reaction, scaling
+- **Legal projects** (guiyon, ss1): Court strategy, judge reaction, appeal dynamics, counter-arguments, witness credibility
+- **Infrastructure** (developer-core, MetaClaw): Scaling stress, failover, sync collision, MCP contention
+
+**Auto-trigger detection:**
+- Claude detects keywords in conversation
+- Automatically proposes MiroFish simulation before implementation
+- Examples: "HITL" → hitl-handoff.yml, "FCA" → pre-fca-sandbox.yml, "суд" → court-strategy.yml
+
+**Implementation:**
+```json
+{
+  "mcpServers": {
+    "qoder": {
+      "type": "stdio",
+      "command": "qodercli",
+      "args": ["mcp-server"]
+    },
+    "mirofish": {
+      "type": "stdio",
+      "command": "mirofish-cli",
+      "args": ["mcp-server"],
+      "env": {
+        "MIROFISH_GRAPH_URI": "bolt://localhost:7687",
+        "MIROFISH_LLM_URL": "http://localhost:11434/v1",
+        "MIROFISH_MODEL": "qwen2.5:32b"
+      }
+    }
+  }
+}
+```
+
+**Status:** ✅ DEPLOYED to all 7 repositories (2026-04-03)
+
+---
+
+### 2026-04-03: Unified Context Architecture
+
+**Decision:** Single `.qoder/context.md` for ALL projects (removed banxe/legal/base variants)
+
+**Rationale:**
+- All projects use three-partner synergy
+- Only MIROFISH-SCENARIOS.md differs by project type
+- Simplifies sync-all.sh logic (no conditional context copying)
+- Easier onboarding: one script, one context, same stack
+
+**Implementation:**
+- Deleted: `context-banxe.md`, `context-legal.md`, `context-base.md`
+- Created: Single `context.md` with universal three-partner contract
+- Updated: `onboard-project.sh` to copy single context.md
+- Updated: `sync-all.sh` to NOT overwrite project-specific MIROFISH-SCENARIOS.md
+
+**Status:** ✅ COMPLETE
+
+---
+
+### 2026-04-03: Auto-Sync via Post-Commit Hook
+
+**Decision:** Automatic sync after commits to developer-core master branch
+
+**Implementation:**
+```bash
+# .git/hooks/post-commit
+#!/bin/bash
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [[ "$BRANCH" != "master" && "$BRANCH" != "main" ]]; then
+    exit 0
+fi
+nohup bash ~/developer/scripts/sync-all.sh >> ~/developer/logs/sync-*.log 2>&1 &
+```
+
+**Behavior:**
+- Runs sync-all.sh in background (non-blocking)
+- Logs output to `~/developer/logs/sync-TIMESTAMP.log`
+- Only triggers on master/main branch commits
+- Safe: Script checks for uncommitted changes before overwriting
+
+**Status:** ✅ INSTALLED in developer-core
+
+---
 
 ### 2026-04-03: Single-Terminal Architecture
 
@@ -277,63 +349,39 @@ wsl:
 
 ---
 
-## Metrics
+## Metrics (Updated 2026-04-03)
 
 | Metric | Value | Target | Status |
 |--------|-------|--------|--------|
-| Repositories covered | 6/6 | 6/6 | ✅ ALL DEPLOYED |
-| Components created | 22 | 15+ | ✅ EXCEEDED |
-| Sync scripts tested | 6/6 | 6/6 | ✅ All passed |
-| GitHub repos pushed | 6/6 | 6/6 | ✅ COMPLETE |
-| Documentation pages | 13 | 10+ | ✅ COMPLETE |
-| Phase 1 deployment (Banxe) | 100% | 100% | ✅ COMPLETE |
-| Phase 2 deployment (Legal) | 100% | 100% | ✅ COMPLETE |
-| MiroFish scenarios created | 7/7 | 7/7 | ✅ READY |
-| MiroFish integration status | Phase 1 ready | Phase 1 complete | 🔄 PENDING USER APPROVAL |
+| Repositories covered | 7/7 | 7/7 | ✅ ALL DEPLOYED |
+| MiroFish scenarios created | 6 project-specific + MASTER | 6/6 | ✅ COMPLETE |
+| Auto-trigger keywords defined | 24+ (banking, legal, infra) | 20+ | ✅ COMPLETE |
+| Sync scripts updated | sync-all.sh, onboard-project.sh | 2/2 | ✅ COMPLETE |
+| Post-commit hook installed | developer-core | 1/1 | ✅ COMPLETE |
+| Context files unified | Single context.md for all | 1/1 | ✅ COMPLETE |
+| GitHub repos pushed (this session) | 7/7 | 7/7 | ✅ COMPLETE |
+| Three-partner architecture deployed | All projects | 100% | ✅ COMPLETE |
 
 ---
 
 ## Next Actions
 
-### Immediate (DONE)
+### ✅ COMPLETED (2026-04-03)
 
-1. ~~**Sync to vibe-coding**~~ ✅ COMPLETE
-2. ~~**Test synergy in vibe-coding**~~ ✅ VERIFIED
-3. ~~**Deploy to collaboration/**~ ✅ COMPLETE
-4. ~~**Deploy to MetaClaw/**~~ ✅ COMPLETE
-5. ~~**Deploy to guiyon/**~~ ✅ COMPLETE
-6. ~~**Deploy to ss1/**~~ ✅ COMPLETE
-7. ~~**Push all repos to GitHub**~~ ✅ COMPLETE
-8. ~~**Create MiroFish integration plan**~~ ✅ COMPLETE (docs/MIROFISH-INTEGRATION.md)
-9. ~~**Create MiroFish scenarios (7)**~~ ✅ COMPLETE
+1. ✅ **Unified context.md** — Single three-partner contract for all projects
+2. ✅ **Updated AGENTS.md v3.0** — Three-partner architecture documentation
+3. ✅ **Created MiroFish scenarios** — 6 project-specific + MASTER index
+4. ✅ **Updated sync-all.sh** — No scenario overwrite, reads from registry
+5. ✅ **Updated onboard-project.sh** — Single context.md, simplified logic
+6. ✅ **Installed post-commit hook** — Auto-sync after developer-core commits
+7. ✅ **Pushed all 7 repos** — All changes committed to GitHub
 
-### Pending - MiroFish Phase 1 Installation
+### Pending - Future Enhancements
 
-10. **Review MiroFish integration proposal**
-    - Read: `docs/MIROFISH-INTEGRATION.md`
-    - Decision: Proceed with installation?
-    
-11. **Install MiroFish engine** (if approved)
-    ```bash
-    cd ~/developer
-    bash mirofish/install-mirofish.sh
-    ```
-    
-12. **Run first test simulation**
-    ```bash
-    bash mirofish/run-simulation.sh test
-    ```
-    
-13. **Execute first production scenario**
-    ```bash
-    bash mirofish/run-simulation.sh hitl-handoff --agents 300 --rounds 40
-    ```
-
-### Pending - Future Work
-
-14. **Create remaining templates**
-    - `templates/project-template/` — new project bootstrap
-    - `agents/` — skills library
+8. **Test post-commit hook** — Commit to developer-core, verify auto-sync runs
+9. **Create project-template/** — New project bootstrap directory
+10. **Build agent skills library** — agents/code-reviewer.skill, etc.
+11. **Run first MiroFish simulation** — Execute hitl-handoff for vibe-coding
 
 ---
 
