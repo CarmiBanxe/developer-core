@@ -1,0 +1,62 @@
+name: Sync Training Data to BANXE Projects
+
+on:
+  repository_dispatch:
+    types: [training-data-updated]
+
+jobs:
+  sync-knowledge-base:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout developer-core
+        uses: actions/checkout@v4
+
+      - name: Checkout training data
+        uses: actions/checkout@v4
+        with:
+          repository: CarmiBanxe/banxe-training-data
+          path: training-data
+          token: ${{ secrets.SYNC_TOKEN }}
+
+      - name: Sync knowledge-base to BANXE repos
+        env:
+          GH_TOKEN: ${{ secrets.SYNC_TOKEN }}
+        run: |
+          echo "=== Training Data Sync ==="
+          echo "Source: ${{ github.event.client_payload.source }}"
+          echo "Timestamp: ${{ github.event.client_payload.timestamp }}"
+          
+          # List of BANXE project repos to receive knowledge base
+          TARGETS=("vibe-coding" "collaboration" "banxe-mirofish")
+          
+          for repo in "${TARGETS[@]}"; do
+            echo "--- Syncing to $repo ---"
+            
+            # Clone target repo
+            git clone https://x-access-token:${GH_TOKEN}@github.com/CarmiBanxe/${repo}.git target-${repo}
+            
+            # Create knowledge-base dir if not exists
+            mkdir -p target-${repo}/knowledge-base
+            
+            # Copy knowledge base files
+            cp -r training-data/knowledge-base/* target-${repo}/knowledge-base/ 2>/dev/null || true
+            
+            # Commit and push
+            cd target-${repo}
+            git config user.name 'github-actions[bot]'
+            git config user.email 'github-actions[bot]@users.noreply.github.com'
+            git add knowledge-base/
+            if git diff --staged --quiet; then
+              echo "No changes for $repo"
+            else
+              git commit -m "sync: Update knowledge base from training-data (${{ github.event.client_payload.timestamp }})"
+              git push
+              echo "Synced to $repo"
+            fi
+            cd ..
+          done
+          
+          echo "=== Sync complete ==="
