@@ -1,0 +1,170 @@
+name: Sync Training Data
+
+on:
+  repository_dispatch:
+    types: [training-data-updated]
+  
+  # Ручной запуск
+  workflow_dispatch:
+    inputs:
+      force_sync:
+        description: 'Force sync even if no changes detected'
+        required: false
+        default: 'false'
+
+jobs:
+  sync-knowledge-base:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout developer-core
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Checkout banxe-training-data
+        uses: actions/checkout@v4
+        with:
+          repository: CarmiBanxe/banxe-training-data
+          path: training-data-source
+          fetch-depth: 0
+          token: ${{ secrets.SYNC_TOKEN }}
+      
+      - name: Check for changes
+        id: changes
+        run: |
+          echo "🔍 Проверка изменений в knowledge-base..."
+          
+          # Копируем knowledge-base из источника
+          rm -rf knowledge-base
+          cp -r training-data-source/knowledge-base ./knowledge-base
+          
+          # Проверяем есть ли изменения
+          if git diff --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "✅ Изменений нет"
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "📝 Обнаружены изменения"
+          fi
+      
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action (Sync)"
+      
+      - name: Commit knowledge-base update
+        if: steps.changes.outputs.has_changes == 'true' || github.event.inputs.force_sync == 'true'
+        run: |
+          git add -A
+          
+          EVENT_DATA='${{ toJSON(github.event.client_payload) }}'
+          FILES_PROCESSED=$(echo $EVENT_DATA | python -c "import sys,json; print(json.load(sys.stdin).get('files_processed', 'unknown'))")
+          UPDATED_AT=$(echo $EVENT_DATA | python -c "import sys,json; print(json.load(sys.stdin).get('updated_at', '$(date -Iseconds)'))")
+          
+          git commit -m "$(cat <<EOF
+sync: Update knowledge-base from banxe-training-data
+
+Source: CarmiBanxe/banxe-training-data
+Files processed: $FILES_PROCESSED
+Updated at: $UPDATED_AT
+
+Knowledge base synced to:
+- vibe-coding/
+- collaboration/
+- banxe-mirofish/
+
+Triggered by: repository_dispatch (training-data-updated)
+
+🤖 Auto-synced by sync-training-data.yml workflow
+EOF
+)"
+      
+      - name: Push to developer-core
+        if: steps.changes.outputs.has_changes == 'true' || github.event.inputs.force_sync == 'true'
+        run: |
+          git push origin HEAD:master || git push origin HEAD:main
+      
+      - name: Distribute to BANXE projects
+        if: steps.changes.outputs.has_changes == 'true' || github.event.inputs.force_sync == 'true'
+        env:
+          SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
+        run: |
+          echo "📦 Распространение knowledge-base в BANXE проекты..."
+          
+          TARGET_REPOS=(
+            "CarmiBanxe/vibe-coding"
+            "CarmiBanxe/collaboration"
+            "CarmiBanxe/banxe-mirofish"
+          )
+          
+          for REPO in "${TARGET_REPOS[@]}"; do
+            echo ""
+            echo "🔄 Синхронизация с $REPO..."
+            
+            # Клонируем целевой репозиторий
+            REPO_NAME=$(basename $REPO)
+            rm -rf "$REPO_NAME"
+            git clone --depth 1 "https://x-access-token:${SYNC_TOKEN}@github.com/${REPO}.git" "$REPO_NAME" 2>/dev/null || {
+              echo "::warning::Не удалось клонировать $REPO"
+              continue
+            }
+            
+            cd "$REPO_NAME"
+            
+            # Копируем knowledge-base
+            rm -rf knowledge-base
+            cp -r ../knowledge-base ./knowledge-base
+            
+            # Коммитим и пушим
+            git add -A
+            if git diff --cached --quiet; then
+              echo "  ⚠️ Нет изменений"
+            else
+              git commit -m "sync: Knowledge-base update from banxe-training-data
+
+Source: CarmiBanxe/banxe-training-data via developer-core
+Auto-synced by sync-training-data.yml workflow
+
+🤖 Generated with [Qoder][https://qoder.com]"
+              
+              git push origin HEAD:main 2>/dev/null || git push origin HEAD:master 2>/dev/null || {
+                echo "::warning::Не удалось запушить в $REPO"
+              }
+              echo "  ✅ Запушено"
+            fi
+            
+            cd ..
+          done
+      
+      - name: Generate summary
+        run: |
+          echo "## 📦 Sync Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Source:** CarmiBanxe/banxe-training-data" >> $GITHUB_STEP_SUMMARY
+          echo "**Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ "${{ steps.changes.outputs.has_changes }}" == "true" ]]; then
+            echo "**Status:** Changes detected and synced ✅" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Status:** No changes detected ⏭️" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Distributed to:**" >> $GITHUB_STEP_SUMMARY
+          echo "- vibe-coding ✅" >> $GITHUB_STEP_SUMMARY
+          echo "- collaboration ✅" >> $GITHUB_STEP_SUMMARY
+          echo "- banxe-mirofish ✅" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ -n "${{ github.event.client_payload.files_processed }}" ]]; then
+            echo "**Files processed:** ${{ github.event.client_payload.files_processed }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [[ -n "${{ github.event.client_payload.updated_at }}" ]]; then
+            echo "**Updated at:** ${{ github.event.client_payload.updated_at }}" >> $GITHUB_STEP_SUMMARY
+          fi
