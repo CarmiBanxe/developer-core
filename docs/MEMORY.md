@@ -6,7 +6,7 @@
 
 ---
 
-## Current State (2026-04-03 — 12:45)
+## Current State (2026-04-03 — 13:30)
 
 ### ✅ Completed
 
@@ -34,7 +34,9 @@
    - `docs/GITHUB-REGISTRY.md` — Repository registry
    - `docs/GITHUB-SETUP.md` — GitHub creation guide
    - `docs/GITHUB-FINAL-STEPS.md` — Manual UI checklist
-   - `docs/MIROFISH-INTEGRATION.md` — **NEW: MiroFish partner integration plan**
+   - `docs/MIROFISH-INTEGRATION.md` — MiroFish partner integration plan
+   - `docs/MIROFISH-GITHUB-SETUP.md` — GitHub repos for MiroFish
+   - `docs/MIROFISH-DEPLOY-GMKTEC.md` — GMKtec/NucBox deployment guide
 
 4. **Phase 1 & 2 Deployment COMPLETE**
    - ✅ `vibe-coding/` — sync commit `dcdbf45`
@@ -48,6 +50,16 @@
 5. **MiroFish Integration Prepared**
    - `mirofish/config-template.yml` — Base configuration
    - `mirofish/install-mirofish.sh` — Installation script
+   - `mirofish/run-simulation.sh` — CLI runner
+   - `mirofish/scenarios/*.yml` — 7 pre-built scenarios
+   - `mirofish/README.md` — Quick start guide
+
+6. **Banxe MiroFish Repository Created**
+   - Location: `~/banxe-mirofish/`
+   - Commit: `729144c`
+   - Status: Ready for GitHub remote setup
+   - Visibility: PRIVATE (scenarios + reports)
+   - Components: `.qoder/`, AGENTS.md, CLAUDE.md, docs/COLLAB.md
    - `mirofish/run-simulation.sh` — Simulation runner CLI
    - `mirofish/scenarios/hitl-handoff.yml` — Scenario 1: HITL trust study
    - `mirofish/scenarios/pre-fca-sandbox.yml` — Scenario 2: Compliance testing
