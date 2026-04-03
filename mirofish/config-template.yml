@@ -1,0 +1,154 @@
+# MiroFish Simulation Configuration Template
+# Source: ~/developer/mirofish/config-template.yml
+# Synced: 2026-04-03
+# Version: 1.0
+
+---
+## Core simulation settings
+
+simulation:
+  # Default number of agents for standard simulations
+  defaultAgents: 200
+  
+  # Default interaction rounds per simulation
+  defaultRounds: 30
+  
+  # Maximum concurrent agents (hardware limit)
+  maxConcurrentAgents: 500
+  
+  # Random seed for reproducibility (null = random each time)
+  seed: null
+  
+  # Save raw interaction data (increases storage, enables deep analysis)
+  saveRawData: true
+
+## LLM configuration (local Ollama default)
+
+llm:
+  # OpenAI-compatible API endpoint
+  baseUrl: http://localhost:11434/v1
+  
+  # Primary model for agent reasoning
+  model: qwen2.5:32b
+  
+  # Embedding model for persona generation and similarity
+  embeddingModel: nomic-embed-text
+  
+  # Temperature for agent creativity (0.0-1.0)
+  temperature: 0.7
+  
+  # Maximum tokens per agent response
+  maxTokens: 2048
+  
+  # Request timeout in seconds
+  timeout: 120
+
+## Graph database (Neo4j)
+
+graph:
+  # Bolt protocol URI
+  uri: bolt://localhost:7687
+  
+  # Authentication
+  user: neo4j
+  password: ${NEO4J_PASSWORD:-changeme}
+  
+  # Database name (default Neo4j database)
+  database: neo4j
+  
+  # Connection pool size
+  poolSize: 10
+
+## Output configuration
+
+output:
+  # Format: json (primary), csv (optional export)
+  format: json
+  
+  # Base directory for simulation outputs
+  baseDir: docs/simulations/
+  
+  # Include raw agent interaction logs
+  includeRawData: true
+  
+  # Generate visualization charts (requires matplotlib)
+  generateCharts: true
+  
+  # Retention period in days (7 = weekly cleanup)
+  retentionDays: 30
+
+## Automatic trigger detection
+
+triggers:
+  # Keywords that auto-trigger MiroFish simulation
+  autoTriggerKeywords:
+    - "human approval"
+    - "handoff"
+    - "дублёр"
+    - "HITL"
+    - "FCA"
+    - "sandbox"
+    - "compliance policy"
+    - "fraud pattern"
+    - "social engineering"
+    - "market reaction"
+    - "launch strategy"
+    - "UX validation"
+    - "drop-off"
+    - "onboarding"
+    - "stress test"
+    - "crisis scenario"
+    - "adoption curve"
+    - "market sizing"
+  
+  # Auto-trigger enabled (set false to disable automatic detection)
+  enabled: true
+  
+  # Require user confirmation before running (recommended: true)
+  requireConfirmation: true
+
+## Security & compliance
+
+security:
+  # NEVER allow production customer data in simulations
+  allowProductionData: false
+  
+  # Require sanitization check before loading documents
+  requireSanitizationCheck: true
+  
+  # Audit all simulations to ClickHouse (for FCA trail)
+  auditAllSimulations: true
+  
+  # Maximum data retention (days)
+  maxDataRetentionDays: 7
+
+## Performance tuning
+
+performance:
+  # Batch size for parallel agent processing
+  batchSize: 50
+  
+  # Delay between batches (ms) to avoid LLM rate limits
+  batchDelayMs: 100
+  
+  # Retry failed agent interactions
+  retryFailed: true
+  maxRetries: 3
+  
+  # Progress reporting interval (every N rounds)
+  progressInterval: 5
+
+## Project-specific overrides (examples)
+
+# Banxe AI Bank (/home/mmber/vibe-coding/)
+# projectOverrides:
+#   banxe:
+#     simulation.defaultAgents: 300
+#     security.auditAllSimulations: true
+#     output.baseDir: /home/mmber/vibe-coding/docs/simulations/
+
+# GUIYON (/home/mmber/guiyon/)
+# projectOverrides:
+#   guiyon:
+#     simulation.defaultAgents: 150
+#     llm.model: qwen2.5:14b  # Lighter model sufficient

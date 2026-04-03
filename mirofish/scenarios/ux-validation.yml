@@ -1,0 +1,140 @@
+# Scenario 5: UX Validation Pipeline (KYC Onboarding)
+# Purpose: Three-stage validation before implementation
+# Source: ~/developer/mirofish/scenarios/ux-validation.yml
+# Version: 1.0 | 2026-04-03
+
+---
+scenario:
+  name: ux_validation_kyc_onboarding
+  description: |
+    Validate KYC onboarding flow through MiroFish simulation before
+    implementation. Part of three-stage pipeline:
+    
+    AutoResearchClaw → MiroFish → Claude Code + Qoder CLI
+    
+    Identify drop-off points and optimize completion rate.
+
+parameters:
+  agents: 200
+  rounds: 25
+  seed: null
+
+demographics:
+  - segment: crypto_native_users
+    percentage: 30%
+    kyc_experience: high (completed 5+ exchange onboardings)
+    patience: low (expect <10min total)
+    tech_comfort: high
+    
+  - segment: traditional_bankers
+    percentage: 35%
+    kyc_experience: low (first crypto exchange)
+    patience: moderate
+    tech_comfort: moderate
+    
+  - segment: sme_business_owners
+    percentage: 25%
+    kyc_experience: moderate (business verification experience)
+    patience: low (time-constrained)
+    tech_comfort: variable
+    
+  - segment: elderly_conservative
+    percentage: 10%
+    kyc_experience: very_low
+    patience: high but frustration_threshold low
+    tech_comfort: low
+
+onboarding_flow:
+  steps:
+    - step: 1_email_signup
+      expected_completion_time: 30s
+      friction_level: low
+      
+    - step: 2_phone_verification
+      expected_completion_time: 2min
+      friction_level: low-moderate (SMS delay possible)
+      
+    - step: 3_id_document_upload
+      expected_completion_time: 3min
+      friction_level: moderate (photo quality issues)
+      
+    - step: 4_biometric_selfie
+      expected_completion_time: 2min
+      friction_level: high (lighting, angle, liveness check failures)
+      
+    - step: 5_source_of_funds
+      expected_completion_time: 2min
+      friction_level: moderate (privacy concerns, documentation gathering)
+      
+    - step: 6_video_call_optional
+      expected_completion_time: 15min
+      friction_level: very_high (scheduled call, waiting, embarrassment)
+      
+  total_expected_time: 24min
+  industry_average_completion: 18min
+  industry_average_dropoff: 0.42  # 42% abandon before completion
+
+injection:
+  events:
+    - event: biometric_failure
+      round: 8
+      affected_agents: 15%
+      details: |
+        Biometric selfie fails liveness check or poor lighting.
+        User must retry up to 3 times before escalation.
+        
+    - event: document_rejection
+      round: 12
+      affected_agents: 10%
+      details: |
+        Uploaded ID document rejected (blurry, expired, wrong type).
+        Manual review required, adds 24-48h delay.
+        
+    - event: source_of_funds_confusion
+      round: 15
+      affected_agents: 20%
+      details: |
+        User confused by "source of funds" question.
+        Doesn't understand difference between income source and transfer origin.
+
+measure:
+  primary_metrics:
+    - step_abandonment_rate_by_step
+    - frustration_signals_by_segment
+    - completion_time_distribution
+    - segment_specific_barriers
+    
+  secondary_metrics:
+    - retry_count_before_abandon
+    - support_ticket_generation_rate
+    - negative_review_probability
+    - referral_likelihood_post_completion
+    
+  thresholds:
+    acceptable_dropoff_rate: 0.25  # Industry is 42%, target <25%
+    critical_friction_step: any_step_with >0.30_abandonment
+    max_completion_time_p95: 30min  # 95th percentile must complete in 30min
+
+expected_outputs:
+  key_findings:
+    - Drop-off heat map by step and segment
+    - Optimal step reordering recommendations
+    - Friction reduction interventions for each high-abandonment step
+    
+  ux_recommendations:
+    - Step sequence changes (e.g., move biometric AFTER document upload)
+    - Progress indicator design (show remaining steps, not just current)
+    - Fallback options (video call bypass for repeated biometric failures)
+    - Segment-specific assistance triggers
+
+integration_point:
+  before_implementing: src/onboarding/kyc_flow.py
+  updates_artifact: docs/UX_SPECIFICATIONS.md
+  
+pipeline_context:
+  stage_1: AutoResearchClaw generates research/crypto-kyc-ux-patterns.md
+  stage_2: MiroFish runs this simulation
+  stage_3: Claude Code + Qoder implement optimized flow
+
+related_scenarios:
+  - hitl-handoff.yml  # HITL also affects onboarding (manual review handoff)

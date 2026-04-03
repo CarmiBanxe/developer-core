@@ -1,0 +1,96 @@
+# Scenario 1: Human-in-the-Loop (Дублёр) Trust & Handoff Study
+# Purpose: Identify optimal triggers for human approval gates (BCG requirement)
+# Source: ~/developer/mirofish/scenarios/hitl-handoff.yml
+# Version: 1.0 | 2026-04-03
+
+---
+scenario:
+  name: hitl_trust_handoff
+  description: |
+    Simulate user trust decay when AI agent autonomously blocks transactions.
+    Identify thresholds where human doppelgänger handoff becomes mandatory.
+    
+    BCG 2026 agentic banking report requires "human approval gates" for
+    high-stakes decisions. This scenario finds the optimal trigger points.
+
+parameters:
+  agents: 300
+  rounds: 40
+  seed: null  # Random each run (set integer for reproducibility)
+
+demographics:
+  - segment: UK_SME_banking
+    percentage: 40%
+    characteristics:
+      - transaction_volume: high (£50k-500k/month)
+      - risk_tolerance: moderate
+      - expectation: fast automated processing
+      
+  - segment: retail_crypto_users
+    percentage: 35%
+    characteristics:
+      - transaction_volume: medium (£5k-50k/month)
+      - risk_tolerance: high (crypto-native)
+      - expectation: 24/7 instant decisions
+      
+  - segment: traditional_bankers
+    percentage: 25%
+    characteristics:
+      - transaction_volume: low-medium (£1k-20k/month)
+      - risk_tolerance: low
+      - expectation: human contact for issues
+
+injection:
+  event: ai_blocks_transaction
+  round: 10
+  details: |
+    AI agent blocks £50,000 transaction due to fraud suspicion.
+    No prior warning given to user. Decision made in <100ms.
+    User discovers block when attempting payment.
+    
+  variations:
+    - variant: immediate_human_available
+      probability: 60%
+      outcome: human responds in <5 minutes
+      
+    - variant: delayed_human_response
+      probability: 30%
+      outcome: human responds in 15-60 minutes
+      
+    - variant: no_human_contact
+      probability: 10%
+      outcome: user cannot reach human same day
+
+measure:
+  primary_metrics:
+    - trust_decay_by_segment
+    - churn_probability_post_incident
+    - handoff_acceptance_rate
+    - social_amplification_factor
+    
+  secondary_metrics:
+    - time_to_trust_recovery
+    - complaint_escalation_rate
+    - negative_word_of_mouth_coefficient
+    
+  thresholds:
+    critical_trust_threshold: 0.65  # Below this = mass churn risk
+    recovery_window_hours: 24       # Max time to restore trust
+
+expected_outputs:
+  key_findings:
+    - Composite score threshold where HITL handoff becomes mandatory
+    - Segment-specific trust decay curves
+    - Optimal communication templates for blocked transactions
+    
+  architectural_impact:
+    - src/compliance/hitl_gateway.py decision thresholds
+    - Communication template library requirements
+    - SLA targets for human response time
+
+integration_point:
+  before_implementing: src/compliance/hitl_gateway.py
+  updates_artifact: compliance/COMPLIANCE_ARCH.md (threshold constants)
+  
+related_scenarios:
+  - fraud-stress-test.yml  # Run after to validate thresholds under attack

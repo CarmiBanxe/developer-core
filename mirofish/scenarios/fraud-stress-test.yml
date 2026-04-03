@@ -1,0 +1,106 @@
+# Scenario 6: Fraud Scenario Stress-Testing (Quarterly)
+# Purpose: Comprehensive stress test with multiple crisis injections
+# Source: ~/developer/mirofish/scenarios/fraud-stress-test.yml
+# Version: 1.0 | 2026-04-03
+
+---
+scenario:
+  name: fraud_stress_test_quarterly
+  description: |
+    Quarterly comprehensive stress-testing of fraud prevention systems.
+    Inject multiple crisis scenarios simultaneously and observe system resilience.
+    
+    Unlike single-vector tests, this simulates cascading failures and
+    adaptive fraud actors who evolve tactics mid-attack.
+
+parameters:
+  agents: 500
+  rounds: 50
+  seed: null  # Different each quarter for variety
+  
+baseline_configuration:
+  legitimate_users: 98%
+  fraud_actors: 2%  # Baseline fraud rate
+  fraud_prevention_effectiveness: 0.85  # 85% of fraud detected at baseline
+
+stress_injections:
+  - injection: btc_crash_40_percent
+    round: 15
+    trigger: external_market_event
+    effects:
+      - panic_withdrawals_increase: 300%
+      - fraud_attempt_increase: 150% (opportunistic fraud during chaos)
+      - support_volume_increase: 500%
+      - system_load_increase: 200%
+      
+  - injection: service_outage_3hr
+    round: 25
+    trigger: infrastructure_failure
+    effects:
+      - complaint_flood: 1000% increase
+      - social_media_backlash: viral_negative_tweets
+      - fraud_detection_blindspot: 3hr window
+      - trust_decay_accelerated: true
+      
+  - injection: competitor_launch
+    round: 35
+    trigger: market_event
+    details: |
+      Major competitor (Revolut/Monzo) launches similar AI-agent product
+      with aggressive pricing and marketing.
+    effects:
+      - churn_consideration_increase: 40%
+      - price_sensitivity_increase: 60%
+      - scrutiny_of_our_ai_claims: higher
+
+fraud_actor_adaptation:
+  enabled: true
+  adaptation_interval: 5_rounds
+  adaptation_mechanism: |
+    Fraud actors observe which prevention rules trigger and adapt:
+    - If rule A blocks attack pattern X, switch to pattern Y
+    - If detection latency >3 rounds, exploit window
+    - Coordinate attacks during stress events (outage, crash)
+
+measure:
+  primary_metrics:
+    - novel_attack_vectors_discovered
+    - prevention_evasion_rate_by_vector
+    - collateral_damage_legit_users_percent
+    - system_resilience_score_under_stress
+    
+  secondary_metrics:
+    - fraud_loss_during_stress_events
+    - recovery_time_post_incident
+    - customer_trust_bounce_back_rate
+    - false_positive_increase_under_load
+    
+  thresholds:
+    max_fraud_loss_tolerance: 0.02  # <2% of transaction volume
+    max_false_positive_rate: 0.08   # <8% even under stress
+    recovery_time_target: 24hr      # Return to baseline within 24h
+    min_resilience_score: 0.70      # 70%+ functionality maintained
+
+expected_outputs:
+  key_findings:
+    - Novel attack vectors not yet seen in production
+    - Prevention rule gaps requiring urgent updates
+    - Cascading failure patterns (one failure triggers others)
+    - Legitimate user impact quantification during stress
+    
+  stress_test_recommendations:
+    - Updated prevention rules for src/fraud/prevention_rules.py
+    - Circuit breaker triggers for stress event detection
+    - Customer communication templates during crises
+    - SLA revisions based on observed recovery times
+
+integration_point:
+  frequency: quarterly
+  next_scheduled: Q2_2026 (July 2026)
+  updates_artifacts:
+    - src/fraud/prevention_rules.py
+    - compliance/incident_response_playbook.md
+    - marketing/crisis_communication_templates.md
+    
+related_scenarios:
+  - fraud-social-eng.yml  # Run separately for deep-dive on social engineering

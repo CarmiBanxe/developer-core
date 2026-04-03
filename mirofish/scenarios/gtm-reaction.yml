@@ -1,0 +1,142 @@
+# Scenario 4: Go-to-Market Market Reaction Simulation
+# Purpose: Media, regulator, skeptic reactions to "AI-agent bank" launch
+# Source: ~/developer/mirofish/scenarios/gtm-reaction.yml
+# Version: 1.0 | 2026-04-03
+
+---
+scenario:
+  name: gtm_market_reaction
+  description: |
+    Simulate media, regulator, and market reaction to "first AI-agent bank
+    with human doppelgänger oversight" concept before real launch.
+    
+    Identify dominant narratives, systematic objections, and optimal messaging.
+
+parameters:
+  agents: 350
+  rounds: 35
+  seed: null
+
+demographics:
+  - segment: fintech_journalists
+    percentage: 15%
+    outlets: [TechCrunch, FT Fintech, American Banker, CoinDesk]
+    influence: high (shape industry narrative)
+    
+  - segment: early_adopters
+    percentage: 25%
+    characteristics:
+      - crypto_native: true
+      - risk_tolerance: very_high
+      - social_amplification: high (Twitter, Reddit, Discord)
+      
+  - segment: skeptical_traditional_bankers
+    percentage: 20%
+    characteristics:
+      - age: 45+
+      - banking_preference: traditional branches
+      - ai_skepticism: high
+      - influence: moderate (employer decision-makers)
+      
+  - segment: fca_regulators
+    percentage: 10%
+    focus_areas:
+      - consumer_protection
+      - systemic_risk
+      - ai_governance
+    concern_threshold: moderate (need proactive engagement)
+      
+  - segment: potential_users_sme
+    percentage: 20%
+    characteristics:
+      - business_owners: true
+      - pain_point: slow traditional banking
+      - adoption_barrier: trust in AI
+
+seed_documents:
+  - path: marketing/product_launch_press_release_v1.md
+    type: public_announcement
+    
+  - path: marketing/unique_value_proposition.md
+    type: positioning
+    
+  - path: research/competitor_analysis_revolut_monzo.md
+    type: competitive_landscape
+    
+  - path: compliance/fca_ai_banking_position_paper.pdf
+    type: regulatory_context
+
+injection:
+  event: viral_twitter_thread
+  round: 8
+  details: |
+    Influential fintech journalist posts Twitter thread:
+    "First AI-agent bank with human doppelgänger oversight launches in UK.
+    But who's really making decisions? The AI or the human?"
+    
+    Thread goes viral (50k likes, 10k retweets in 24h).
+    
+  response_variants:
+    - variant: positive_coverage
+      probability: 35%
+      narrative: "Finally, banking that understands me"
+      
+    - variant: skeptical_coverage
+      probability: 40%
+      narrative: "AI washing - where's the human really?"
+      
+    - variant: regulatory_concern
+      probability: 25%
+      narrative: "FCA needs to scrutinize this model"
+
+messaging_variants:
+  Test three positioning strategies across agent segments:
+  
+  - variant_A: "AI-agent banking with human oversight"
+    emphasis: technology + safety
+    expected_resonance: early_adopters (high), traditional (low)
+    
+  - variant_B: "Traditional banking, 10x faster with AI"
+    emphasis: familiarity + speed
+    expected_resonance: SME (high), early_adopters (moderate)
+    
+  - variant_C: "Your personal banking doppelgänger"
+    emphasis: personalization + partnership
+    expected_resonance: retail (high), regulators (concern)
+
+measure:
+  primary_metrics:
+    - narrative_dominance_by_variant
+    - objection_patterns_systematic
+    - messaging_resonance_by_segment
+    - regulator_concern_flags_raised
+    
+  secondary_metrics:
+    - word_of_mouth_velocity
+    - skepticism_half_life_hours
+    - critical_mass_adoption_threshold
+    - media_sentiment_score
+    
+  thresholds:
+    positive_narrative_required: 0.60  # >60% positive coverage
+    regulator_engagement_trigger: concern_score > 0.40
+    pivot_messaging_trigger: resonance < 0.30 across all variants
+
+expected_outputs:
+  key_findings:
+    - Optimal messaging variant by target segment
+    - Systematic objections requiring pre-launch rebuttal
+    - Regulator concerns requiring proactive engagement plan
+    
+  go_to_market_recommendations:
+    - Primary messaging hierarchy (variant selection)
+    - Press release revision suggestions
+    - FCA pre-launch briefing document outline
+    - Crisis communication playbook for skeptical coverage
+
+integration_point:
+  timeline: 3_months_before_public_launch
+  updates_artifact: marketing/gtm_strategy.md, marketing/press_release_final.md
+  
+related_scenarios:
+  - market-adoption.yml  # Deeper dive into adoption curve post-launch

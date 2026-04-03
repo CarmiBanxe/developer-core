@@ -1,0 +1,101 @@
+# Scenario 3: Fraud Pattern Detection via Social Simulation
+# Purpose: Model coordinated social attacks and social engineering
+# Source: ~/developer/mirofish/scenarios/fraud-social-eng.yml
+# Version: 1.0 | 2026-04-03
+
+---
+scenario:
+  name: fraud_social_engineering
+  description: |
+    Unlike statistical fraud models, MiroFish simulates coordinated
+    social attacks and social engineering that historical data doesn't capture.
+    
+    Inject malicious actors into simulated community and observe attack patterns.
+
+parameters:
+  agents: 400
+  rounds: 50
+  seed: null
+  
+malicious_configuration:
+  malicious_actors_percentage: 8%  # ~32 fraud actors in 400 agents
+  coordination_level: high  # Actors communicate and coordinate
+  adaptation_enabled: true  # Actors adapt tactics every 5 rounds
+
+demographics:
+  - segment: legitimate_users
+    percentage: 92%
+    characteristics:
+      - intent: normal banking activity
+      - trust_level: moderate-high
+      - fraud_awareness: variable
+      
+  - segment: fraud_actors_coordinated_complaints
+    percentage: 4%  # ~16 agents
+    tactic: |
+      Flood support with fake complaints to trigger false positives
+      Goal: Disable fraud prevention for real attack window
+      
+  - segment: fraud_actors_social_engineering
+    percentage: 3%  # ~12 agents
+    tactic: |
+      Impersonate support staff, trick users into revealing credentials
+      Goal: Account takeover via trust exploitation
+      
+  - segment: fraud_actors_synthetic_identities
+    percentage: 1%  # ~4 agents
+    tactic: |
+      Create clusters of synthetic identities with shared attributes
+      Goal: Build credit history, then bust-out fraud
+
+attack_timeline:
+  - round: 5
+    event: complaint_flood_begins
+    actors: coordinated_complaints_group
+    expected_detection_time: round 12
+    
+  - round: 15
+    event: social_engineering_campaign
+    actors: social_engineering_group
+    target_segment: elderly_users, low_fraud_awareness
+    
+  - round: 25
+    event: synthetic_identity_bustout
+    actors: synthetic_identities_group
+    pattern: sudden_max_out_credit_then_disappear
+
+measure:
+  primary_metrics:
+    - attack_success_rate_by_type
+    - detection_latency_rounds
+    - false_positive_spillover_legit_users
+    - community_trust_collapse_coefficient
+    
+  secondary_metrics:
+    - novel_attack_vectors_discovered
+    - fraud_actor_adaptation_patterns
+    - legitimate_user_friction_increase
+    - support_overwhelm_threshold
+    
+  thresholds:
+    acceptable_detection_latency: 5_rounds  # Detect within 5 rounds
+    max_false_positive_rate: 0.05  # <5% legit users affected
+    trust_collapse_threshold: 0.50  # >50% trust loss = systemic failure
+
+expected_outputs:
+  key_findings:
+    - New fraud patterns not in historical training data
+    - Early warning indicators for each attack type
+    - Optimal prevention rule placement points
+    
+  prevention_recommendations:
+    - Updated fraud detection rules for src/fraud/prevention_rules.py
+    - Support team escalation triggers
+    - User communication templates during attacks
+
+integration_point:
+  before_updating: src/fraud/prevention_rules.py
+  complements: statistical_fraud_detection (ML models)
+  
+related_scenarios:
+  - fraud-stress-test.yml  # Quarterly comprehensive stress test

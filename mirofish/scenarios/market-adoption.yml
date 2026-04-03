@@ -1,0 +1,151 @@
+# Scenario 7: Market Adoption Curve Modeling
+# Purpose: Consumer reaction simulation, adoption curve projections
+# Source: ~/developer/mirofish/scenarios/market-adoption.yml
+# Version: 1.0 | 2026-04-03
+
+---
+scenario:
+  name: market_adoption_curve
+  description: |
+    Model consumer adoption curve for AI-agent banking product.
+    Simulate diffusion across innovators, early adopters, majority, laggards.
+    
+    Test different messaging variants to optimize go-to-market strategy.
+
+parameters:
+  agents: 600
+  rounds: 60
+  seed: null
+
+diffusion_segments:
+  # Rogers' Diffusion of Innovations model
+  
+  - segment: innovators
+    percentage: 2.5%  # ~15 agents
+    characteristics:
+      - risk_tolerance: very_high
+      - tech_enthusiasm: extreme
+      - social_influence: moderate (niche communities)
+      - price_sensitivity: low
+      - decision_trigger: "first to market" novelty
+      
+  - segment: early_adopters
+    percentage: 13.5%  # ~81 agents
+    characteristics:
+      - risk_tolerance: high
+      - tech_enthusiasm: high
+      - social_influence: high (opinion leaders)
+      - price_sensitivity: low-moderate
+      - decision_trigger: competitive_advantage
+      
+  - segment: early_majority
+    percentage: 34%  # ~204 agents
+    characteristics:
+      - risk_tolerance: moderate
+      - tech_enthusiasm: moderate
+      - social_influence: moderate
+      - price_sensitivity: moderate
+      - decision_trigger: proven_track_record, peer_adoption
+      
+  - segment: late_majority
+    percentage: 34%  # ~204 agents
+    characteristics:
+      - risk_tolerance: low
+      - tech_enthusiasm: low
+      - social_influence: low
+      - price_sensitivity: high
+      - decision_trigger: market_standard, necessity
+      
+  - segment: laggards
+    percentage: 16%  # ~96 agents
+    characteristics:
+      - risk_tolerance: very_low
+      - tech_enthusiasm: very_low
+      - social_influence: minimal
+      - price_sensitivity: very_high
+      - decision_trigger: forced_obsolescence_of_alternatives
+
+messaging_variants:
+  A/B/C test three positioning strategies:
+  
+  variant_A:
+    message: "AI-agent banking with human oversight"
+    emphasis: technology + safety_net
+    expected_performance:
+      innovators: high_resonance
+      early_adopters: high_resonance
+      early_majority: moderate_resonance
+      late_majority: low_resonance (too technical)
+      laggards: negative_resonance (fear of AI)
+      
+  variant_B:
+    message: "Traditional banking, 10x faster with AI"
+    emphasis: familiarity + efficiency
+    expected_performance:
+      innovators: moderate_resonance (not novel enough)
+      early_adopters: moderate_resonance
+      early_majority: high_resonance
+      late_majority: high_resonance
+      laggards: moderate_resonance (less threatening)
+      
+  variant_C:
+    message: "Your personal banking doppelgänger"
+    emphasis: personalization + partnership
+    expected_performance:
+      innovators: moderate_resonance
+      early_adopters: high_resonance
+      early_majority: moderate_resonance (creepy factor)
+      late_majority: low_resonance
+      laggards: negative_resonance (dystopian connotations)
+
+word_of_mouth_model:
+  nps_drivers:
+    - positive_experience_multiplier: 2.5  # Each happy user tells 2.5 people
+    - negative_experience_multiplier: 4.0  # Each unhappy user tells 4 people
+    - social_media_amplification: 10x_for_viral_content
+    
+  adoption_barriers:
+    - trust_deficit: initial_barrier 0.60 (only 40% trust AI banking)
+    - regulatory_concern: barrier 0.30 (FCA approval reduces this)
+    - competitor_comparison: barrier 0.20 (Revolut/Monzo brand recognition)
+
+measure:
+  primary_metrics:
+    - adoption_velocity_by_variant
+    - word_of_mouth_coefficient_actual
+    - skepticism_half_life_weeks
+    - critical_mass_threshold_percent
+    
+  secondary_metrics:
+    - segment_crossing_chasm_time
+    - peak_adoption_rate_round
+    - churn_rate_post_adoption
+    - lifetime_value_by_segment
+    
+  thresholds:
+    critical_mass_required: 0.16  # 16% adoption = self-sustaining growth
+    chasm_crossing_indicator: early_adopters → early_majority flow
+    unsustainable_churn_alert: >0.05_monthly
+
+expected_outputs:
+  key_findings:
+    - Optimal messaging variant for each segment
+    - Adoption velocity projection (months to critical mass)
+    - Word-of-mouth coefficient estimate
+    - Chasm crossing probability (innovators → mainstream)
+    
+  go_to_market_recommendations:
+    - Primary messaging hierarchy (which variant leads)
+    - Segment targeting sequence (who to target first)
+    - Marketing budget allocation by channel
+    - Milestone timeline (when to expect each adoption phase)
+
+integration_point:
+  timeline: before_marketing_campaign_launch
+  updates_artifacts:
+    - marketing/gtm_strategy.md
+    - marketing/budget_allocation.xlsx
+    - marketing/milestone_timeline.md
+    
+related_scenarios:
+  - gtm-reaction.yml  # Run before this for narrative analysis

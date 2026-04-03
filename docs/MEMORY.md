@@ -6,14 +6,14 @@
 
 ---
 
-## Current State (2026-04-03 — 11:36)
+## Current State (2026-04-03 — 12:45)
 
 ### ✅ Completed
 
 1. **Developer Core Repository Created**
    - Location: `~/developer/`
    - Commit: `e323165` (latest)
-   - Status: Local only (GitHub push pending auth)
+   - Status: ✅ PUSHED TO GITHUB (CarmiBanxe/developer)
 
 2. **Core Components Deployed**
    - `.qoder/config.yml` — WSL-optimized Qoder config
@@ -30,38 +30,50 @@
    - `docs/SYNERGY-DEPLOYMENT.md` — Deployment plan (ACTIVE)
    - `docs/SYNERGY-ROLLBACK.md` — Rollback procedures
    - `docs/MEMORY.md` — This file
+   - `docs/ALL-PHASES-COMPLETE.md` — Final deployment report
+   - `docs/GITHUB-REGISTRY.md` — Repository registry
+   - `docs/GITHUB-SETUP.md` — GitHub creation guide
+   - `docs/GITHUB-FINAL-STEPS.md` — Manual UI checklist
+   - `docs/MIROFISH-INTEGRATION.md` — **NEW: MiroFish partner integration plan**
 
-4. **Phase 1 Deployment COMPLETE**
+4. **Phase 1 & 2 Deployment COMPLETE**
    - ✅ `vibe-coding/` — sync commit `dcdbf45`
    - ✅ `collaboration/` — sync commit `4018078`
    - ✅ `MetaClaw/` — sync commit `141d421`
+   - ✅ `guiyon/` — sync commit `aa49077` (after SSH key removal)
+   - ✅ `ss1/` — sync commit `7917d17`
+   - ✅ `developer/` — sync commit `217f333`
    - All projects verified with `check-agent-instructions.sh`
+
+5. **MiroFish Integration Prepared**
+   - `mirofish/config-template.yml` — Base configuration
+   - `mirofish/install-mirofish.sh` — Installation script
+   - `mirofish/run-simulation.sh` — Simulation runner CLI
+   - `mirofish/scenarios/hitl-handoff.yml` — Scenario 1: HITL trust study
+   - `mirofish/scenarios/pre-fca-sandbox.yml` — Scenario 2: Compliance testing
+   - `mirofish/scenarios/fraud-social-eng.yml` — Scenario 3: Fraud patterns
+   - `mirofish/scenarios/gtm-reaction.yml` — Scenario 4: Market reaction
+   - `mirofish/scenarios/ux-validation.yml` — Scenario 5: UX validation
+   - `mirofish/scenarios/fraud-stress-test.yml` — Scenario 6: Stress testing
+   - `mirofish/scenarios/market-adoption.yml` — Scenario 7: Adoption curve
 
 ---
 
 ### 🔄 In Progress
 
-1. **GitHub Remote Setup**
-   - Repo: CarmiBanxe/developer
-   - Status: Auth required (SSH key or token)
+1. **MiroFish Integration Phase 1**
+   - Components: Installation scripts, configuration templates, 7 scenarios
+   - Status: READY FOR USER REVIEW
+   - Next: User approval → install-mirofish.sh execution → first simulation
 
 ---
 
 ### ⏳ Pending
 
-1. **Legal Projects Deployment (Phase 2)**
-   - Target: `guiyon/`, `ss1/`
-   - Status: Ready to deploy
-   - Note: SS1 uses GUIYON tech stack, legally independent
-
----
-
-### ⏳ Pending
-
-1. **Legal Projects Deployment (Phase 2)**
-   - Target: `guiyon/`, `ss1/`
-   - Status: Waiting Phase 1 completion
-   - Note: SS1 uses GUIYON tech stack, legally independent
+1. **MiroFish Phase 2: First Production Simulation**
+   - Target: Run hitl-handoff scenario for Banxe AI Bank
+   - Expected output: HITL threshold recommendations for compliance stack
+   - Updates: `src/compliance/hitl_gateway.py` decision thresholds
 
 2. **Project Template Creation**
    - Location: `templates/project-template/`
@@ -162,6 +174,58 @@
 
 ---
 
+### 2026-04-03: Three-Partner Synergy (Claude + Qoder + MiroFish)
+
+**Decision:** Integrate MiroFish as third partner following same algorithm
+
+**Role definition:**
+- **Claude Code**: Architect & Coordinator (design, review, orchestration)
+- **Qoder CLI**: Executor (implementation, edits, tests)
+- **MiroFish**: Simulator & Validator (behavioral simulation, stress-testing)
+
+**When MiroFish activates:**
+- Designing HITL handoff points (BCG requirement)
+- Testing compliance policies before FCA Sandbox
+- Validating UX flows before implementation
+- Stress-testing fraud detection scenarios
+- Simulating market reaction to product launches
+
+**Architecture:**
+```json
+{
+  "mcpServers": {
+    "qoder": {
+      "type": "stdio",
+      "command": "qodercli",
+      "args": ["mcp-server"]
+    },
+    "mirofish": {
+      "type": "stdio",
+      "command": "mirofish-cli",
+      "args": ["mcp-server"],
+      "env": {
+        "MIROFISH_GRAPH_URI": "bolt://localhost:7687",
+        "MIROFISH_LLM_URL": "http://localhost:11434/v1",
+        "MIROFISH_MODEL": "qwen2.5:32b"
+      }
+    }
+  }
+}
+```
+
+**Seven high-value applications:**
+1. HITL architecture simulation (дублёр trust thresholds)
+2. Pre-FCA-Sandbox compliance testing
+3. Fraud pattern detection via social simulation
+4. Go-to-market market reaction modeling
+5. UX validation pipeline (AutoResearchClaw → MiroFish → Claude Code)
+6. Fraud scenario stress-testing (quarterly)
+7. Market adoption curve modeling
+
+**Integration status:** Components ready, awaiting Phase 1 installation
+
+---
+
 ## Open Issues
 
 ### GitHub Authentication
@@ -206,12 +270,14 @@ wsl:
 | Metric | Value | Target | Status |
 |--------|-------|--------|--------|
 | Repositories covered | 6/6 | 6/6 | ✅ ALL DEPLOYED |
-| Components created | 12 | 15+ | On track |
+| Components created | 22 | 15+ | ✅ EXCEEDED |
 | Sync scripts tested | 6/6 | 6/6 | ✅ All passed |
-| GitHub repos pushed | 0/6 | 6/6 | Auth pending |
-| Documentation pages | 7 | 10+ | In progress |
+| GitHub repos pushed | 6/6 | 6/6 | ✅ COMPLETE |
+| Documentation pages | 13 | 10+ | ✅ COMPLETE |
 | Phase 1 deployment (Banxe) | 100% | 100% | ✅ COMPLETE |
 | Phase 2 deployment (Legal) | 100% | 100% | ✅ COMPLETE |
+| MiroFish scenarios created | 7/7 | 7/7 | ✅ READY |
+| MiroFish integration status | Phase 1 ready | Phase 1 complete | 🔄 PENDING USER APPROVAL |
 
 ---
 
@@ -221,31 +287,41 @@ wsl:
 
 1. ~~**Sync to vibe-coding**~~ ✅ COMPLETE
 2. ~~**Test synergy in vibe-coding**~~ ✅ VERIFIED
-3. ~~**Deploy to collaboration/**~~ ✅ COMPLETE
+3. ~~**Deploy to collaboration/**~ ✅ COMPLETE
 4. ~~**Deploy to MetaClaw/**~~ ✅ COMPLETE
 5. ~~**Deploy to guiyon/**~~ ✅ COMPLETE
 6. ~~**Deploy to ss1/**~~ ✅ COMPLETE
+7. ~~**Push all repos to GitHub**~~ ✅ COMPLETE
+8. ~~**Create MiroFish integration plan**~~ ✅ COMPLETE (docs/MIROFISH-INTEGRATION.md)
+9. ~~**Create MiroFish scenarios (7)**~~ ✅ COMPLETE
 
-### Pending
+### Pending - MiroFish Phase 1 Installation
 
-7. **Push all repos to GitHub**
-   ```bash
-   # Developer Core
-   cd ~/developer && git push
-   
-   # Banxe Group
-   cd ~/vibe-coding && git push
-   cd ~/collaboration && git push
-   cd ~/MetaClaw && git push
-   
-   # Legal Group
-   cd ~/guiyon && git push
-   cd ~/ss1 && git push
-   ```
+10. **Review MiroFish integration proposal**
+    - Read: `docs/MIROFISH-INTEGRATION.md`
+    - Decision: Proceed with installation?
+    
+11. **Install MiroFish engine** (if approved)
+    ```bash
+    cd ~/developer
+    bash mirofish/install-mirofish.sh
+    ```
+    
+12. **Run first test simulation**
+    ```bash
+    bash mirofish/run-simulation.sh test
+    ```
+    
+13. **Execute first production scenario**
+    ```bash
+    bash mirofish/run-simulation.sh hitl-handoff --agents 300 --rounds 40
+    ```
 
-8. **Create remaining templates**
-   - `templates/project-template/` — new project bootstrap
-   - `agents/` — skills library
+### Pending - Future Work
+
+14. **Create remaining templates**
+    - `templates/project-template/` — new project bootstrap
+    - `agents/` — skills library
 
 ---
 

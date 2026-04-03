@@ -1,0 +1,117 @@
+# Scenario 2: Pre-FCA-Sandbox Compliance Policy Testing
+# Purpose: Test draft policies before FCA Regulatory Sandbox submission
+# Source: ~/developer/mirofish/scenarios/pre-fca-sandbox.yml
+# Version: 1.0 | 2026-04-03
+
+---
+scenario:
+  name: pre_fca_sandbox
+  description: |
+    Load draft compliance policies and test how different user types
+    interpret them before FCA Regulatory Sandbox submission.
+    
+    FCA accepts sandbox applications year-round. This simulation
+    identifies ambiguous clauses and regulatory risks pre-submission.
+
+parameters:
+  agents: 250
+  rounds: 30
+  seed: null
+
+demographics:
+  - segment: compliance_officers
+    percentage: 20%
+    characteristics:
+      - expertise: FCA handbook, MLR 2017
+      - scrutiny_level: very high
+      - focus: AML/CFT adequacy
+      
+  - segment: fintech_lawyers
+    percentage: 15%
+    characteristics:
+      - expertise: crypto registration, EMI licensing
+      - scrutiny_level: high
+      - focus: liability allocation, disclosure sufficiency
+      
+  - segment: sme_customers
+    percentage: 40%
+    characteristics:
+      - expertise: low (business owners, not compliance experts)
+      - scrutiny_level: moderate
+      - focus: operational clarity, can I use this service?
+      
+  - segment: retail_users
+    percentage: 25%
+    characteristics:
+      - expertise: very low
+      - scrutiny_level: low (trust FCA-regulated institutions)
+      - focus: simplicity, speed, fees
+
+seed_documents:
+  - path: compliance/draft_AML_policy_v0.3.pdf
+    type: policy
+    priority: critical
+    
+  - path: compliance/customer_disclosure_template.md
+    type: disclosure
+    priority: high
+    
+  - path: legal/terms_of_service_draft.docx
+    type: contract
+    priority: high
+    
+  - path: compliance/fca_sandbox_application_draft.pdf
+    type: regulatory_filing
+    priority: critical
+
+injection:
+  event: fca_examiner_review
+  round: 5
+  details: |
+    FCA examiner reviews sandbox application alongside simulated users.
+    Different agent types interpret disclosure language differently.
+    Examiner flags clauses that confuse >30% of non-expert agents.
+    
+  follow_up_events:
+    - event: ambiguous_clause_detected
+      trigger: confusion_rate > 0.30
+      consequence: regulatory_risk_flag_raised
+      
+    - event: expert_disagreement
+      trigger: compliance_officers disagree with lawyers on interpretation
+      consequence: clause_requires_legal_review
+
+measure:
+  primary_metrics:
+    - misunderstanding_rate_by_clause
+    - regulatory_risk_flags_raised
+    - segment_specific_confusion_patterns
+    - ambiguous_phrase_detection
+    
+  secondary_metrics:
+    - time_to_comprehension_by_segment
+    - clarification_question_frequency
+    - legal_challenge_probability
+    
+  thresholds:
+    acceptable_confusion_rate: 0.15  # <15% confusion = acceptable
+    critical_confusion_rate: 0.30    # >30% = red flag, rewrite required
+    expert_consensus_required: 0.80  # 80%+ experts must agree on interpretation
+
+expected_outputs:
+  key_findings:
+    - List of clauses requiring rewrite before submission
+    - Segment-specific interpretation gaps (SME vs retail)
+    - Regulatory risk heat map by policy section
+    
+  recommended_actions:
+    - Specific clause rewrites with alternative language
+    - Additional disclosure requirements for high-confusion segments
+    - FCA examiner Q&A preparation document
+
+integration_point:
+  before: FCA Regulatory Sandbox application submission
+  updates_artifact: compliance/policies/* (draft revisions)
+  
+related_scenarios:
+  - hitl-handoff.yml  # HITL policies also require FCA clarity
