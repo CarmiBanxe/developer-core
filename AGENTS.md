@@ -1,8 +1,9 @@
 # AGENTS.md — Developer Core: Central Repository for Shared Components
 
 **Repository:** `~/developer/`  
-**Version:** 1.0 | 2026-04-03  
-**Purpose:** Shared components, templates, and configurations distributed across all projects
+**Version:** 3.0 | 2026-04-03  
+**Purpose:** Shared components, templates, and configurations distributed across all projects  
+**Architecture:** Three-Partner Synergy (Claude Code + Qoder CLI + MiroFish)
 
 ---
 
@@ -12,21 +13,41 @@ This repository is the **central source of truth** for:
 
 - Agent instructions (AGENTS.md, CLAUDE.md templates)
 - Qoder CLI configurations (.qoder/config.yml)
+- **Three-partner synergy architecture** (Claude + Qoder + MiroFish)
 - Compliance architecture (COMPLIANCE_ARCH.md)
-- Shared scripts and automation
+- Shared scripts and automation (sync-all.sh, onboard-project.sh)
 - Project templates
 - MCP best practices
+- **MiroFish scenario templates** (MASTER copies for all projects)
+
+### Three-Partner Architecture
+
+All projects use the same three-partner stack:
+
+| Partner | Role | Activation | Scope |
+|---------|------|------------|-------|
+| **Claude Code** | Architect & Coordinator | Every session | Design, review, orchestration |
+| **Qoder CLI** | Executor | MCP auto-load | Implementation, edits, tests |
+| **MiroFish** | Simulator & Validator | Auto-trigger by keywords | Behavioral simulation, stress-testing |
+
+**Key principle:** MiroFish is a partner for ALL projects, not just Banxe.
+- Banxe projects: banking/FCA/fraud scenarios
+- Legal projects: court/judge/appeal scenarios
+- Developer-core: infrastructure & sync validation
 
 ### Distribution model
 
 Components from this repository are synced to:
 
-| Project | Sync target | Frequency |
-|---------|-------------|-----------|
-| vibe-coding | `/home/mmber/vibe-coding/` | On change |
-| collaboration | `/home/mmber/collaboration/` | On change |
-| guiyon | `/home/mmber/guiyon/` | On change |
-| MetaClaw | `/home/mmber/MetaClaw/` | On change |
+| Project | Type | Sync target | MiroFish | Scenarios |
+|---------|------|-------------|----------|-----------|
+| vibe-coding | banxe | `/home/mmber/vibe-coding/` | ✅ | banking/FCA/fraud |
+| collaboration | banxe | `/home/mmber/collaboration/` | ✅ | multi-agent conflicts |
+| MetaClaw | banxe | `/home/mmber/MetaClaw/` | ✅ | orchestration scaling |
+| guiyon | legal | `/home/mmber/guiyon/` | ✅ | court strategy |
+| ss1 | legal | `/home/mmber/ss1/` | ✅ | appeal dynamics |
+| banxe-mirofish | tool | `/home/mmber/banxe-mirofish/` | ✅ | MASTER templates |
+| developer-core | core | `/home/mmber/developer/` | ✅ | ALL (MASTER) |
 
 ---
 
@@ -99,31 +120,32 @@ When syncing components TO a project, that project's local files take precedence
 
 | Script | Purpose | Usage |
 |--------|---------|-------|
+| `scripts/sync-all.sh` | Sync all projects from registry | `bash sync-all.sh [--dry-run]` |
+| `scripts/onboard-project.sh` | Onboard new project | `./onboard-project.sh <name> <type>` |
 | `scripts/check-agent-instructions.sh` | Verify instruction hierarchy | Debug agent setup |
-| `scripts/sync-to-project.sh` | Distribute components | `bash sync-to-project.sh vibe-coding` |
 
 ---
 
 ## Sync protocol
 
-### Manual sync (current method)
+### Sync protocol
+
+#### Manual sync (current method)
 
 ```bash
 cd ~/developer
-bash scripts/sync-to-project.sh <project-name>
+bash scripts/sync-all.sh
 ```
 
-### Automatic sync (future state)
+#### Automatic sync (future state)
 
-On commit to `~/developer/`:
-1. Detect changed components
-2. Identify affected projects
-3. Create PR in target repository
-4. Notify user for approval
+**Post-commit hook** (`~/developer/.git/hooks/post-commit`):
+- On commit to `~/developer/`: auto-run sync-all.sh
+- Detect changed components
+- Identify affected projects
+- Commit and push to all repos automatically
 
----
-
-## Change management
+### Change management
 
 ### Safe changes (auto-sync allowed)
 
@@ -151,17 +173,19 @@ On commit to `~/developer/`:
 
 ## Project isolation enforcement
 
-**CRITICAL:** This repository contains SHARED templates.
+**CRITICAL:** This repository contains SHARED templates and MASTER scenario copies.
 
 When working IN this repository:
 - Edit templates for distribution
 - Test changes before syncing
 - Document breaking changes
+- Maintain MiroFish scenario templates (MASTER)
 
 When working IN a target project:
 - Use synced templates as starting point
-- Local overrides allowed and expected
+- Local overrides allowed and expected (especially MIROFISH-SCENARIOS.md)
 - Report useful improvements back to developer/
+- Project-specific scenarios stay in the project (not synced back)
 
 ---
 
@@ -230,13 +254,15 @@ To add a new shared component:
 
 | File | Purpose | Sync targets |
 |------|---------|--------------|
-| `AGENTS.md` | This file — agent instructions template | All projects |
+| `AGENTS.md` | This file — three-partner agent instructions | All projects |
 | `.qoder/config.yml` | Qoder CLI configuration | All projects |
-| `.qoder/context.md` | Qoder execution contract | All projects |
+| `.qoder/context.md` | Qoder execution contract (UNIVERSAL) | All projects |
 | `docs/COLLAB.md` | Collaboration documentation | All projects |
 | `docs/MCP-BEST-PRACTICES.md` | MCP server guide | All projects |
+| `docs/PROJECT-REGISTRY.csv` | Project registry for sync-all.sh | Internal use |
+| `scripts/sync-all.sh` | Multi-repo sync automation | Internal use |
+| `scripts/onboard-project.sh` | New project onboarding | Internal use |
 | `scripts/check-agent-instructions.sh` | Diagnostic tool | All projects |
-| `scripts/sync-to-project.sh` | Sync automation | Internal use |
 | `compliance/COMPLIANCE_ARCH.md` | Compliance invariants | vibe-coding |
 
 ---
@@ -257,8 +283,10 @@ A component is ready for sync when:
 
 ## Next steps (pending work)
 
-- [ ] Create `scripts/sync-to-project.sh` for automated distribution
-- [ ] Add version headers to all existing components
-- [ ] Test sync workflow on non-production project
-- [ ] Document rollback procedures
-- [ ] Create project-template/ for new project bootstrap
+- [x] Create sync-all.sh for automated distribution
+- [x] Update AGENTS.md with three-partner architecture
+- [x] Create onboard-project.sh for new project onboarding
+- [ ] Create git post-commit hook for auto-sync
+- [ ] Deploy full Qoder stack to banxe-mirofish
+- [ ] Create project-specific MIROFISH-SCENARIOS.md for all 6 projects
+- [ ] Update MEMORY.md with three-partner documentation

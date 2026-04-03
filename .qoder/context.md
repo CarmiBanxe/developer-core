@@ -1,43 +1,74 @@
-# .qoder/context.md — Qoder Execution Contract (Developer Core Template)
+# .qoder/context.md — Qoder Execution Contract (Three-Partner Synergy)
 
-**Repository:** `~/developer/`  
-**Purpose:** Central repository for shared components across all projects  
-**Version:** 1.0 | 2026-04-03
+**Repository:** Generic project template  
+**Purpose:** Universal execution contract for ALL projects  
+**Version:** 3.0 | 2026-04-03
 
 ---
 
 ## Core rule
 
-**Repository scope = ~/developer/ only.**
+**Repository scope = current project only.**
 
-This is a **template repository** containing shared components for distribution.
+This project uses **three-partner synergy**: Claude Code + Qoder CLI + MiroFish.
 
 ### What this means
 
-- Edit files here for downstream distribution
-- Test changes before syncing to projects
-- Never assume project-specific paths or configs
-- Report breaking changes clearly
+- All projects have access to full three-partner stack
+- MiroFish auto-triggers for validation-critical tasks
+- Project-specific scenarios in docs/MIROFISH-SCENARIOS.md
+- Update docs/MEMORY.md after significant changes
+
+---
+
+## Three-Partner Architecture
+
+| Partner | Role | Activation | Scope |
+|---------|------|------------|-------|
+| **Claude Code** | Architect & Coordinator | Every `claude` session | Design, review, orchestration |
+| **Qoder CLI** | Executor | MCP auto-load | Implementation, edits, tests |
+| **MiroFish** | Simulator & Validator | Auto-trigger by keywords | Behavioral simulation, stress-testing |
+
+### MiroFish for ALL Projects
+
+**Banxe projects (vibe-coding, collaboration, MetaClaw, banxe-mirofish):**
+- HITL handoff simulations (дублёр trust thresholds)
+- FCA compliance policy testing
+- Fraud pattern detection
+- Market reaction modeling
+- UX validation for banking flows
+
+**Legal projects (guiyon, ss1):**
+- Court strategy simulation (судебная стратегия)
+- Judge reaction modeling (реакция суда)
+- Appeal dynamics (апелляционная динамика)
+- Counter-argument stress-testing (контраргументы)
+- Witness credibility analysis
+
+**Developer-core:**
+- All scenario templates (MASTER)
+- Sync coordination
+- Infrastructure validation
 
 ---
 
 ## Project isolation
 
-**Hard invariant:** This repository is NOT a working project.
+**Hard invariant:** One terminal = one project = one repository.
 
 | Do | Don't |
 |----|-------|
-| Create templates for new projects | Implement project-specific features here |
-| Update shared scripts | Hardcode paths to specific projects |
-| Maintain compliance reference | Run production services from here |
-| Sync tested components | Auto-sync without review |
+| Implement project features | Mix files from other projects |
+| Run MiroFish simulations | Assume paths from other repos |
+| Update MEMORY.md | Commit without testing |
+| Follow project-specific rules | Expose sensitive data |
 
 ### Violation is a critical error
 
 Never:
 - Read project files without explicit instruction
 - Assume project structure matches templates
-- Mix components from different downstream projects
+- Mix components from different projects
 
 ---
 
@@ -45,45 +76,47 @@ Never:
 
 **Qoder CLI role in this repository:**
 
-1. **Template maintainer** — edit files that will be copied to projects
-2. **Sync executor** — run distribution scripts when requested
-3. **Integration tester** — validate components work in target projects
+1. **Implementation executor** — write code, edit files, run tests
+2. **Simulation assistant** — help run MiroFish scenarios
+3. **Documentation helper** — update project docs
 
 ### Typical tasks
 
-- Update AGENTS.md template
-- Modify .qoder/config.yml defaults
-- Add new scripts to scripts/
-- Create project templates in templates/
-- Test sync workflow
+- Implement features
+- Write and run tests
+- Run MiroFish simulations (auto-triggered)
+- Update documentation
 
 ---
 
 ## Working method
 
-### For template edits
+### For implementation tasks
 
-1. Identify the component to update
-2. Make changes with clear diff
-3. Test syntax/validity
-4. Commit with version bump
-5. Note which projects should receive update
+1. Read relevant design docs
+2. Implement with clear diff
+3. Write tests
+4. Update MEMORY.md
+5. Commit with clear message
 
-### For sync operations
+### For MiroFish simulations
 
-1. User specifies target project(s)
-2. Show diff for each target
-3. Wait for explicit approval
-4. Execute sync
-5. Verify success
+When Claude detects validation-critical task:
 
-### For testing
+1. Claude triggers MiroFish automatically
+2. MiroFish runs project-specific scenario
+3. Results inform design decisions
+4. Qoder implements based on validated design
 
-1. Pick non-production project first
-2. Apply component
-3. Verify functionality
-4. Report results
-5. Ready for broader sync
+**Auto-trigger keywords (ALL projects):**
+- `HITL`, `handoff`, `дублёр` → hitl-handoff.yml
+- `FCA`, `compliance`, `sandbox` → pre-fca-sandbox.yml
+- `fraud pattern`, `social engineering` → fraud-social-eng.yml
+- `market reaction`, `launch` → gtm-reaction.yml
+- `UX validation`, `drop-off` → ux-validation.yml
+- `stress test`, `crisis` → fraud-stress-test.yml
+- `court`, `judge`, `суд` → court-strategy.yml (legal)
+- `appeal`, `counter-argument`, `апелляция` → appeal-dynamics.yml (legal)
 
 ---
 
@@ -91,80 +124,26 @@ Never:
 
 When working in this repository:
 
-1. **User instruction** — explicit sync/deploy commands
+1. **User instruction** — explicit commands
 2. **This context** (.qoder/context.md) — execution rules
-3. **AGENTS.md** — component catalog and procedures
-4. **Global defaults** (~/.claude/CLAUDE.md)
-
-### Downstream precedence
-
-Components synced TO projects become templates there. Local project files override these defaults.
-
----
-
-## Compliance-sensitive repositories
-
-If syncing TO `vibe-coding`:
-
-### Special handling required
-
-Before syncing compliance components:
-
-1. Read target's `COMPLIANCE_ARCH.md`
-2. Compare with source in `developer/compliance/`
-3. Identify any invariant changes
-4. Require explicit user approval for:
-   - Threshold changes
-   - Source weight modifications
-   - Retention assumption updates
-   - Licensing boundary shifts
-
-### Protected invariants (vibe-coding)
-
-- Canonical key structure
-- OFAC RSS status (dead since Jan 2025)
-- Watchman minMatch = 0.80
-- ClickHouse TTL = 5 YEAR
-- AGPLv3 internal-only use
-- GUIYON exclusion
-
-**Never sync changes to these without explicit review.**
+3. **AGENTS.md** — agent instructions
+4. **CLAUDE.md** — project context
+5. **docs/MIROFISH-SCENARIOS.md** — project-specific scenarios
+6. **Global defaults** (~/.claude/CLAUDE.md)
 
 ---
 
 ## Output expectations
 
-After completing work in this repository:
+After completing work:
 
 ```
-✓ Component updated: {name}
-✓ Tests passed: {test_type}
-✓ Ready for sync to: {projects}
+✓ Task completed: {description}
+✓ Files changed: {count}
+✓ Tests passed: {count}
+✓ Simulation run: {scenario-name} (if triggered)
+✓ MEMORY.md updated: yes/no
 ○ Pending: {follow-up actions}
-```
-
-### For sync operations
-
-```
-═══════════════════════════════════════
-  Sync Report: Developer → {project}
-═══════════════════════════════════════
-
-Updated components:
-  ✓ AGENTS.md (v1.0 → v1.1)
-  ✓ .qoder/config.yml (WSS polling added)
-  ○ scripts/sync-to-project.sh (new)
-
-Skipped (local overrides detected):
-  ○ CLAUDE.md (project-specific)
-
-Verification:
-  ✓ Syntax check passed
-  ✓ Target tests run successfully
-  ✓ No breaking changes detected
-
-Rollback available: git stash apply
-═══════════════════════════════════════
 ```
 
 ---
@@ -173,22 +152,50 @@ Rollback available: git stash apply
 
 | Command | Purpose |
 |---------|---------|
-| `bash scripts/sync-to-project.sh <name>` | Sync to project |
-| `bash scripts/check-agent-instructions.sh` | Verify setup |
-| `git diff --stat origin/master` | See pending changes |
-| `ls templates/` | List available templates |
+| `bash collab.sh worker "task" branch` | Parallel implementation |
+| `bash collab.sh run "command"` | Single command |
+| `bash collab.sh jobs` | Check active tasks |
+| `bash ../developer/mirofish/run-simulation.sh <scenario>` | Run MiroFish simulation |
+| `python -m pytest tests/` | Run test suite |
 
 ---
 
 ## Files in this repository
 
-| Path | Purpose | Sync status |
-|------|---------|-------------|
-| `.qoder/context.md` | This file — execution contract | Template |
-| `.qoder/config.yml` | Qoder configuration | Sync to all |
-| `AGENTS.md` | Agent instructions template | Sync to all |
-| `docs/COLLAB.md` | Collaboration docs | Sync to all |
-| `docs/MCP-BEST-PRACTICES.md` | MCP guide | Sync to all |
-| `scripts/` | Shared utilities | Sync to all |
-| `templates/` | Project bootstraps | Copy on demand |
-| `compliance/` | Reference implementation | vibe-coding only |
+| Path | Purpose |
+|------|---------|
+| `.qoder/context.md` | This file — execution contract (UNIVERSAL) |
+| `.qoder/config.yml` | Qoder CLI configuration |
+| `AGENTS.md` | Three-partner agent instructions |
+| `CLAUDE.md` | Project context |
+| `docs/COLLAB.md` | Collaboration pattern |
+| `docs/MIROFISH-SCENARIOS.md` | Project-specific MiroFish scenarios |
+| `docs/MEMORY.md` | Long-term memory |
+
+---
+
+## Project-Specific MiroFish Scenarios
+
+### Banxe Projects (Banking/FCA)
+- `hitl-handoff.yml` — Human-in-the-loop trust thresholds
+- `pre-fca-sandbox.yml` — Compliance policy testing
+- `fraud-social-eng.yml` — Fraud pattern detection
+- `gtm-reaction.yml` — Market reaction modeling
+- `ux-validation.yml` — Banking UX validation
+
+### Legal Projects (Court/Appeals)
+- `court-strategy.yml` — Судебная стратегия, реакция суда
+- `appeal-dynamics.yml` — Апелляционная динамика, контраргументы
+- `witness-credibility.yml` — Анализ показаний свидетелей
+- `judge-reaction.yml` — Моделирование реакции судьи
+
+### Developer-Core (Infrastructure)
+- ALL scenario templates (MASTER copies)
+- Sync validation scenarios
+- Infrastructure stress-tests
+
+---
+
+**Source:** `~/developer/.qoder/context.md` (MASTER)  
+**Synced:** Auto-sync via sync-all.sh  
+**Architecture:** Three-Partner Synergy (Claude + Qoder + MiroFish) for ALL projects

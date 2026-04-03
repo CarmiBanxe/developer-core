@@ -1,5 +1,5 @@
-project|type|onboarded|repos|mirofish|status
-BANXE|banxe|2026-04-03|vibe-coding,collaboration,MetaClaw,banxe-mirofish|yes|active
-ГИЙОН|legal|2026-04-03|guiyon|no|active
-СС1|legal|2026-04-03|ss1|no|active
-Developer|core|2026-04-03|developer-core|yes|active
+project|type|onboarded|repos|mirofish|scenarios
+BANXE|banxe|2026-04-03|vibe-coding,collaboration,MetaClaw,banxe-mirofish|yes|banking/FCA/fraud
+ГИЙОН|legal|2026-04-03|guiyon|yes|court/judge/appeal
+СС1|legal|2026-04-03|ss1|yes|court/judge/appeal
+Developer|core|2026-04-03|developer-core|yes|ALL (MASTER)

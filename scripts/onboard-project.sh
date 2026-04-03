@@ -8,6 +8,9 @@
 #   ./onboard-project.sh my-new-project banxe
 #   ./onboard-project.sh legal-case-2026 legal
 #   ./onboard-project.sh experimental other
+#
+# ВАЖНО: Все проекты используют ЕДИНЫЙ context.md (three-partner synergy)
+# Различия только в docs/MIROFISH-SCENARIOS.md (проект-специфичные сценарии)
 
 set -e
 
@@ -131,30 +134,19 @@ done
 # 2. CONTEXT.MD ПО ТИПУ
 # ============================================
 
-log "📄 Настройка context.md для типа '$TYPE'..."
+log "📄 Настройка context.md (единый для всех проектов)..."
 
-case $TYPE in
-    banxe)
-        cp "$SOURCE/.qoder/context-banxe.md" .qoder/context.md
-        success "  context-banxe.md (с MiroFish pipeline)"
-        
-        # Копируем MIROFISH-SCENARIOS.md если есть
-        if [[ -f "$SOURCE/docs/MIROFISH-SCENARIOS.md" ]]; then
-            cp "$SOURCE/docs/MIROFISH-SCENARIOS.md" docs/
-            success "  MIROFISH-SCENARIOS.md"
-        else
-            warning "  MIROFISH-SCENARIOS.md не найден в источнике"
-        fi
-        ;;
-    legal)
-        cp "$SOURCE/.qoder/context-legal.md" .qoder/context.md
-        success "  context-legal.md (без MiroFish)"
-        ;;
-    *)
-        cp "$SOURCE/.qoder/context-base.md" .qoder/context.md
-        success "  context-base.md (базовая версия)"
-        ;;
-esac
+# ЕДИНЫЙ context.md для ВСЕХ проектов (three-partner synergy)
+cp "$SOURCE/.qoder/context.md" .qoder/context.md
+success "  context.md (Three-Partner: Claude + Qoder + MiroFish)"
+
+# Копируем MIROFISH-SCENARIOS.md если есть
+if [[ -f "$SOURCE/docs/MIROFISH-SCENARIOS.md" ]]; then
+    cp "$SOURCE/docs/MIROFISH-SCENARIOS.md" docs/
+    success "  MIROFISH-SCENARIOS.md"
+else
+    warning "  MIROFISH-SCENARIOS.md не найден в источнике"
+fi
 
 # ============================================
 # 3. РЕГИСТРАЦИЯ В РЕЕСТРЕ
@@ -262,24 +254,10 @@ echo ""
 echo "Тип проекта: $TYPE"
 echo "Расположение: $TARGET"
 echo ""
-
-if [[ "$TYPE" == "banxe" ]]; then
-    echo "MiroFish: ✅ Подключён (автоматические симуляции)"
-    echo ""
-    echo "Для запуска сессии:"
-    echo "  cd $TARGET && claude"
-elif [[ "$TYPE" == "legal" ]]; then
-    echo "MiroFish: ❌ Не используется (документо-ориентированный проект)"
-    echo ""
-    echo "Для запуска сессии:"
-    echo "  cd $TARGET && claude"
-else
-    echo "MiroFish: ❌ Не настроен (базовая конфигурация)"
-    echo ""
-    echo "Для запуска сессии:"
-    echo "  cd $TARGET && claude"
-fi
-
+echo "MiroFish: ✅ Подключён (Three-Partner Synergy)"
+echo ""
+echo "Для запуска сессии:"
+echo "  cd $TARGET && claude"
 echo ""
 echo "Синхронизация:"
 echo "  bash $SOURCE/scripts/sync-all.sh"

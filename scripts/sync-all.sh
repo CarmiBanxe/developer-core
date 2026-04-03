@@ -5,7 +5,7 @@
 #   bash ~/developer/scripts/sync-all.sh [--dry-run]
 #
 # Реестр проектов: ~/developer/docs/PROJECT-REGISTRY.csv
-# Формат: project|type|onboarded|repos|mirofish|status
+# Формат: project|type|onboarded|repos|mirofish|scenarios
 
 set -e
 
@@ -50,6 +50,7 @@ error() {
 declare -A PROJECT_TYPES
 declare -A PROJECT_REPOS
 declare -A PROJECT_MIROFISH
+declare -A PROJECT_SCENARIOS
 
 read_registry() {
     log "📖 Чтение реестра проектов..."
@@ -60,7 +61,7 @@ read_registry() {
     fi
     
     local first_line=true
-    while IFS='|' read -r project type onboarded repos mirofish status; do
+    while IFS='|' read -r project type onboarded repos mirofish scenarios; do
         # Пропускаем заголовок
         if [[ "$first_line" == "true" ]]; then
             first_line=false
@@ -74,8 +75,9 @@ read_registry() {
         PROJECT_TYPES["$project"]="$type"
         PROJECT_REPOS["$project"]="$repos"
         PROJECT_MIROFISH["$project"]="$mirofish"
+        PROJECT_SCENARIOS["$project"]="$scenarios"
         
-        log "  → $project (тип: $type, MiroFish: $mirofish)"
+        log "  → $project (тип: $type, MiroFish: $mirofish, сценарии: $scenarios)"
     done < "$REGISTRY"
 }
 
@@ -114,76 +116,34 @@ sync_common_files() {
     done
 }
 
-sync_mirofish_files() {
+sync_mirofish_scenarios() {
     local repo=$1
-    local target=~/$(basename $repo)
+    local project_type=$2
     
-    MIROFISH_FILES=(
-        "docs/MIROFISH-SCENARIOS.md"
-    )
-    
-    for file in "${MIROFISH_FILES[@]}"; do
-        SOURCE_FILE="$SOURCE/$file"
-        
-        if [[ ! -f "$SOURCE_FILE" ]]; then
-            warning "  Файл $file не найден в источнике"
-            continue
-        fi
-        
-        mkdir -p "$target/$(dirname $file)"
-        
-        if [[ "$DRY_RUN" == "true" ]]; then
-            echo "    [DRY] cp $file → $repo/"
-        else
-            cp "$SOURCE_FILE" "$target/$file"
-            success "  Скопирован $file"
-        fi
-    done
+    # НЕ копируем MIROFISH-SCENARIOS.md — у каждого проекта свои сценарии
+    # Исключение: developer-core хранит MASTER копии всех сценариев
+    # Если нужно обновить сценарий — редактируем в проекте и коммитим
+    :
 }
 
 sync_context() {
     local repo=$1
-    local type=$2
     local target=~/$(basename $repo)
     
-    case "$type" in
-        banxe)
-            CONTEXT_FILE="$SOURCE/.qoder/context-banxe.md"
-            if [[ -f "$CONTEXT_FILE" ]]; then
-                mkdir -p "$target/.qoder"
-                if [[ "$DRY_RUN" == "true" ]]; then
-                    echo "    [DRY] cp context-banxe.md → $repo/.qoder/context.md"
-                else
-                    cp "$CONTEXT_FILE" "$target/.qoder/context.md"
-                    success "  $repo: context-banxe.md (с MiroFish)"
-                fi
-            fi
-            ;;
-        legal)
-            CONTEXT_FILE="$SOURCE/.qoder/context-legal.md"
-            if [[ -f "$CONTEXT_FILE" ]]; then
-                mkdir -p "$target/.qoder"
-                if [[ "$DRY_RUN" == "true" ]]; then
-                    echo "    [DRY] cp context-legal.md → $repo/.qoder/context.md"
-                else
-                    cp "$CONTEXT_FILE" "$target/.qoder/context.md"
-                    success "  $repo: context-legal.md (без MiroFish)"
-                fi
-            fi
-            ;;
-        *)
-            CONTEXT_FILE="$SOURCE/.qoder/context-base.md"
-            if [[ -f "$CONTEXT_FILE" ]]; then
-                mkdir -p "$target/.qoder"
-                if [[ "$DRY_RUN" == "true" ]]; then
-                    echo "    [DRY] cp context-base.md → $repo/.qoder/context.md"
-                else
-                    cp "$CONTEXT_FILE" "$target/.qoder/context.md"
-                    success "  $repo: context-base.md"
-                fi
-            fi
-            ;;
-    esac
+    # ЕДИНЫЙ context.md для ВСЕХ проектов
+    CONTEXT_FILE="$SOURCE/.qoder/context.md"
+    
+    if [[ -f "$CONTEXT_FILE" ]]; then
+        mkdir -p "$target/.qoder"
+        if [[ "$DRY_RUN" == "true" ]]; then
+            echo "    [DRY] cp context.md → $repo/.qoder/context.md"
+        else
+            cp "$CONTEXT_FILE" "$target/.qoder/context.md"
+            success "  $repo: context.md (Three-Partner Synergy)"
+        fi
+    else
+        error "  context.md не найден!"
+    fi
 }
 
 commit_and_push() {
@@ -218,11 +178,12 @@ sync: Update shared stack from developer-core
 
 Components updated:
 - AGENTS.md (three-partner synergy)
-- .qoder/context.md (Banxe/Legal/Base version)
+- .qoder/context.md (UNIVERSAL — Claude + Qoder + MiroFish)
 - docs/COLLAB.md
 - docs/MCP-BEST-PRACTICES.md
 - .qoder/config.yml
 - scripts/check-agent-instructions.sh
+- docs/MIROFISH-SCENARIOS.md (project-specific)
 
 Source: ~/developer/ (MASTER)
 Synced via: sync-all.sh
@@ -259,6 +220,7 @@ main() {
         type="${PROJECT_TYPES[$project]}"
         repos="${PROJECT_REPOS[$project]}"
         mirofish="${PROJECT_MIROFISH[$project]}"
+        scenarios="${PROJECT_SCENARIOS[$project]}"
         
         log "Проект: $project (тип: $type, MiroFish: $mirofish)"
         
@@ -278,13 +240,13 @@ main() {
             # 1. Общий стек
             sync_common_files "$repo"
             
-            # 2. MiroFish (если banxe)
-            if [[ "$mirofish" == "yes" ]]; then
-                sync_mirofish_files "$repo"
-            fi
+            # 2. Context (единый для всех)
+            sync_context "$repo"
             
-            # 3. Context по типу
-            sync_context "$repo" "$type"
+            # 3. MiroFish scenarios (кроме developer-core)
+            if [[ "$mirofish" == "yes" ]]; then
+                sync_mirofish_scenarios "$repo" "$type"
+            fi
         done
     done
     
