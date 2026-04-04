@@ -12,7 +12,7 @@ This is the **central hub** for all shared components used across your projects:
 
 | Directory | Contents | Synced to |
 |-----------|----------|-----------|
-| `.qoder/` | Qoder CLI configs | All projects |
+| `.aider.conf.yml/` | Aider CLI configs | All projects |
 | `docs/` | Collaboration docs (COLLAB.md, MCP best practices) | All projects |
 | `scripts/` | Automation & diagnostic tools | All projects |
 | `templates/` | Project bootstrap templates | Copy on demand |
@@ -56,7 +56,7 @@ bash scripts/check-agent-instructions.sh
 │               ~/developer/ (CORE)                  │
 │                                                    │
 │  ┌──────────┐  ┌──────────┐  ┌──────────────────┐ │
-│  │ .qoder/  │  │  docs/   │  │    scripts/      │ │
+│  │ .aider.conf.yml/  │  │  docs/   │  │    scripts/      │ │
 │  │ config   │  │ COLLAB   │  │   sync-to-*.sh   │ │
 │  └──────────┘  └──────────┘  └──────────────────┘ │
 │                                                    │
@@ -72,7 +72,7 @@ bash scripts/check-agent-instructions.sh
 │vibe-coding│  │ guiyon    │  │  MetaClaw      │
 │           │  │           │  │                │
 │ AGENTS.md │  │ AGENTS.md │  │  AGENTS.md     │
-│ .qoder/   │  │ .qoder/   │  │  .qoder/       │
+│ .aider.conf.yml/   │  │ .aider.conf.yml/   │  │  .aider.conf.yml/       │
 │ docs/     │  │ docs/     │  │  docs/         │
 └───────────┘  └───────────┘  └────────────────┘
 ```
@@ -86,7 +86,7 @@ Agents working in any project follow this priority:
 1. **Explicit user instruction** (highest authority)
 2. **Repository-level contracts**:
    - `CLAUDE.md` — project context
-   - `.qoder/context.md` — Qoder execution contract
+   - `.aider.conf.yml` — Aider execution contract
    - `AGENTS.md` — agent instructions
    - `COLLAB.md` — collaboration pattern
    - `COMPLIANCE_ARCH.md` — compliance invariants (if applicable)
@@ -130,8 +130,8 @@ git restore {component}
 
 | Component | Purpose | When to update |
 |-----------|---------|----------------|
-| `.qoder/config.yml` | Qoder CLI configuration | WSL optimizations, MCP settings |
-| `.qoder/context.md` | Qoder execution contract | Role definitions, scope rules |
+| `.aider.conf.yml` | Aider CLI configuration | WSL optimizations, MCP settings |
+| `.aider.conf.yml` | Aider execution contract | Role definitions, scope rules |
 | `AGENTS.md` | Agent instructions template | Collaboration model changes |
 | `docs/COLLAB.md` | Single-terminal synergy docs | Workflow updates |
 | `docs/MCP-BEST-PRACTICES.md` | MCP server guide | New best practices |
@@ -182,7 +182,7 @@ Before syncing to production projects:
    shellcheck scripts/*.sh
    
    # YAML configs
-   python3 -c "import yaml; yaml.safe_load(open('.qoder/config.yml'))"
+   python3 -c "import yaml; yaml.safe_load(open('.aider.conf.yml'))"
    
    # JSON
    python3 -c "import json; json.load(open('some-file.json'))"
@@ -247,7 +247,7 @@ To add a new shared component:
 | Repository | Path | Purpose |
 |------------|------|---------|
 | vibe-coding | `~/vibe-coding/` | Banxe AI Bank — primary project |
-| collaboration | `~/collaboration/` | Claude Code + Qoder CLI setup docs |
+| collaboration | `~/collaboration/` | Claude Code + Aider CLI setup docs |
 | guiyon | `~/guiyon/` | Separate entity (excluded from Banxe) |
 | MetaClaw | `~/MetaClaw/` | Crypto AML project |
 
