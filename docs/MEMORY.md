@@ -81,7 +81,7 @@
 |---------|------|------|----------|-----------|--------|--------|
 | Banxe AI Bank | `~/vibe-coding/` | banxe | ✅ | banking/FCA/fraud | 8d820ce | ✅ DEPLOYED |
 | Collaboration | `~/collaboration/` | banxe | ✅ | multi-agent conflicts | a1a16d1 | ✅ DEPLOYED |
-| MetaClaw | `~/MetaClaw/` | banxe | ✅ | orchestration scaling | 16dd8b1 | ✅ DEPLOYED |
+| MetaClaw | `developer-core tool` | developer | ✅ | infra/orchestration scenarios | 16dd8b1 | ✅ delegated to projects |
 | GUIYON | `~/guiyon/` | legal | ✅ | court strategy | f3b92ae | ✅ DEPLOYED |
 | SS1 | `~/ss1/` | legal | ✅ | appeal dynamics | eefbb6a | ✅ DEPLOYED |
 | Banxe MiroFish | `~/banxe-mirofish/` | tool | ✅ | MASTER templates | 0755284 | ✅ DEPLOYED |
@@ -103,9 +103,9 @@
 | **MiroFish** | Simulator & Validator | Auto-trigger by keywords | Behavioral simulation, stress-testing |
 
 **Project-specific scenarios:**
-- **Banxe projects** (vibe-coding, collaboration, MetaClaw): HITL, FCA, fraud, UX validation, market reaction, scaling
+- **Banxe projects** (vibe-coding): HITL, FCA, fraud, UX validation, market reaction, scaling
 - **Legal projects** (guiyon, ss1): Court strategy, judge reaction, appeal dynamics, counter-arguments, witness credibility
-- **Infrastructure** (developer-core, MetaClaw): Scaling stress, failover, sync collision, MCP contention
+- **Infrastructure** (developer-core toolchain): Scaling stress, failover, sync collision, MCP contention
 
 **Auto-trigger detection:**
 - Claude detects keywords in conversation

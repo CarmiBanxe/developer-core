@@ -14,7 +14,7 @@ This file serves as the **central index** for all MiroFish scenarios across the 
 **Project-specific scenario files:**
 - `MIROFISH-SCENARIOS-vibe-coding.md` → Banking/FCA scenarios
 - `MIROFISH-SCENARIOS-collaboration.md` → Multi-agent conflicts
-- `MIROFISH-SCENARIOS-MetaClaw.md` → Scaling/orchestration
+- `MIROFISH-SCENARIOS-MetaClaw.md` → Infrastructure & orchestration (developer-core layer)
 - `MIROFISH-SCENARIOS-guiyon.md` → Court strategy (legal)
 - `MIROFISH-SCENARIOS-ss1.md` → Appeal dynamics (legal)
 - `MIROFISH-SCENARIOS-banxe-mirofish.md` → Master template library
@@ -25,16 +25,16 @@ This file serves as the **central index** for all MiroFish scenarios across the 
 
 ### Banking & Compliance (BANXE Projects)
 
-| Scenario | vibe-coding | collaboration | MetaClaw | Auto-triggers |
+| Scenario | vibe-coding | collaboration | Auto-triggers |
 |----------|:-----------:|:-------------:|:--------:|---------------|
-| HITL Handoff | ✅ | ✅ | ⚪ | `HITL`, `дублёр` |
-| FCA Sandbox | ✅ | ⚪ | ⚪ | `FCA`, `sandbox` |
-| Fraud Detection | ✅ | ✅ | ⚪ | `fraud`, `phishing` |
-| Market Reaction | ✅ | ⚪ | ✅ | `launch`, `adoption` |
-| UX Validation | ✅ | ✅ | ⚪ | `drop-off`, `conversion` |
-| Stress Test | ✅ | ⚪ | ✅ | `crash`, `crisis` |
-| Multi-Agent Conflict | ⚪ | ✅ | ⚪ | `conflict`, `collision` |
-| Distributed TXN | ⚪ | ✅ | ✅ | `rollback`, `Saga` |
+| HITL Handoff | ✅ | ✅ | `HITL`, `дублёр` |
+| FCA Sandbox | ✅ | ⚪ | `FCA`, `sandbox` |
+| Fraud Detection | ✅ | ✅ | `fraud`, `phishing` |
+| Market Reaction | ✅ | ⚪ | `launch`, `adoption` |
+| UX Validation | ✅ | ✅ | `drop-off`, `conversion` |
+| Stress Test | ✅ | ⚪ | `crash`, `crisis` |
+| Multi-Agent Conflict | ⚪ | ✅ | `conflict`, `collision` |
+| Distributed TXN | ⚪ | ✅ | `rollback`, `Saga` |
 
 **Legend:** ✅ Used | ⚪ Not applicable
 
@@ -52,20 +52,20 @@ This file serves as the **central index** for all MiroFish scenarios across the 
 | Procedural Default | ✅ | ✅ | `waiver`, `deadline` |
 | Enforcement | ⚪ | ✅ | `collection`, `recovery` |
 
-### Infrastructure & Scaling (MetaClaw/Developer)
+### Infrastructure & Scaling (developer-core toolchain)
 
-| Scenario | MetaClaw | developer-core | All Projects* | Auto-triggers |
+| Scenario | developer-core | All Projects* | Auto-triggers |
 |----------|:--------:|:--------------:|:-------------:|---------------|
-| Scaling Stress | ✅ | ✅ | ⚪ | `100 to 10000` |
-| Tenant Isolation | ✅ | ⚪ | ⚪ | `multi-tenant` |
-| Orchestrator Failover | ✅ | ✅ | ⚪ | `failover`, `HA` |
-| Worker Exhaustion | ✅ | ⚪ | ⚪ | `queue full` |
-| Cross-Region REPL | ✅ | ⚪ | ⚪ | `replication` |
+| Scaling Stress | ✅ | ⚪ | `100 to 10000` |
+| Tenant Isolation | ✅ | ⚪ | `multi-tenant` |
+| Orchestrator Failover | ✅ | ⚪ | `failover`, `HA` |
+| Worker Exhaustion | ✅ | ⚪ | `queue full` |
+| Cross-Region REPL | ✅ | ⚪ | `replication` |
 | Sync Collision | ⚪ | ✅ | ✅ | `sync conflict` |
 | MCP Contention | ⚪ | ✅ | ✅ | `MCP overload` |
 | Human-AI Collision | ⚪ | ✅ | ✅ | `dual control` |
 
-\* Infra scenarios affect all projects but only run in developer-core/MetaClaw
+* Infra scenarios run via developer-core toolchain; inherited by all projects after delegation
 
 ---
 

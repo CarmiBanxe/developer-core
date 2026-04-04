@@ -1,9 +1,13 @@
-# docs/MIROFISH-SCENARIOS.md — MetaClaw Orchestration Platform
+# docs/MIROFISH-SCENARIOS-MetaClaw.md — developer-core: Infrastructure & Orchestration Scenarios
 
-**Project:** MetaClaw  
-**Type:** Orchestration & Scaling  
-**MiroFish Role:** Load testing & scaling validation  
-**Auto-trigger:** Scale keywords (100→10000 users, orchestration, load)
+**Layer:** developer-core toolchain
+**Type:** Infrastructure & Orchestration
+**MiroFish Role:** Load testing, scaling validation, failover simulation
+**Auto-trigger:** Scale keywords (100→10000 users, orchestration, failover, load, multi-tenant)
+
+> **Note:** These scenarios belong to the **developer-core** layer — they test infrastructure
+> patterns applicable to all projects. They are not BANXE-specific. After delegation,
+> each project inherits these patterns as part of its runtime operational layer.
 
 ---
 
@@ -27,7 +31,7 @@ Stage 5: 10,000 users → Sharding + CDN + auto-scaling
 **Bottleneck Detection:**
 - **Database connections:** Pool exhaustion at ~800 concurrent users
 - **Redis memory:** Session storage grows 50MB per 1,000 users
-- **API rate limits:** External services (Moov, ClickHouse) throttle at 100 req/sec
+- **API rate limits:** External services throttle at 100 req/sec
 - **WebSocket connections:** File descriptor limits at ~4,000 simultaneous
 
 **Validation Metrics:**
@@ -47,18 +51,18 @@ Stage 5: 10,000 users → Sharding + CDN + auto-scaling
 **Scenario:** 50 tenants, each with 200 concurrent users
 
 **Agents:**
-- **Tenant A (Banxe):** High-security banking workload
-- **Tenant B (Startup):** Low-priority dev environment
-- **Tenant C (Enterprise):** Mission-critical production
+- **Tenant A:** High-security workload (e.g. banking)
+- **Tenant B:** Low-priority dev environment
+- **Tenant C:** Mission-critical production
 - **Noisy Neighbor:** Tenant D generates 80% of load
 
 **Isolation Tests:**
-1. **CPU throttling:** Noisy neighbor can't starve others
-2. **Memory limits:** Hard cgroups enforcement
-3. **Database row-level security:** Tenant A can't query Tenant B data
-4. **Cache key namespacing:** Redis keys prefixed with tenant_id
+1. CPU throttling: noisy neighbor can't starve others
+2. Memory limits: hard cgroups enforcement
+3. Database row-level security: tenants cannot cross-query
+4. Cache key namespacing: keys prefixed with tenant_id
 
-**Failure Mode:** 
+**Failure Mode:**
 ```
 Bug: Cache key = "user_session_12345" (no tenant prefix)
 Result: Tenant A user authenticated as Tenant B user
@@ -75,15 +79,15 @@ Fix: Cache key = "tenant_a:user_session_12345"
 **Triggers:** `failover`, `HA`, `orchestrator crash`, `leader election`
 
 **Failure Scenarios:**
-1. **Leader crash:** Primary orchestrator dies mid-workflow
-2. **Split-brain:** Two leaders elected simultaneously
-3. **Zombie leader:** Old leader doesn't step down
-4. **Cascading failure:** Orchestrator + worker both crash
+1. Leader crash: primary orchestrator dies mid-workflow
+2. Split-brain: two leaders elected simultaneously
+3. Zombie leader: old leader doesn't step down
+4. Cascading failure: orchestrator + worker both crash
 
 **Recovery Timeline:**
 ```
-T0: Leader orchestrator crashes
-T0+5s: Health check detects failure
+T0:     Leader orchestrator crashes
+T0+5s:  Health check detects failure
 T0+10s: Follower initiates leader election
 T0+15s: New leader elected (Raft consensus)
 T0+20s: In-flight workflows resumed from checkpoint
@@ -91,8 +95,7 @@ T0+30s: Full recovery, users unaware
 ```
 
 **Validation Criteria:**
-- RTO (Recovery Time Objective) < 30 seconds
-- RPO (Recovery Point Objective) = 0 (no workflow loss)
+- RTO < 30 seconds, RPO = 0 (no workflow loss)
 - Automatic failover (no human intervention)
 - Split-brain prevention (quorum-based election)
 
@@ -106,21 +109,16 @@ T0+30s: Full recovery, users unaware
 
 **Load Pattern:**
 ```
-Normal: 10 workers, 5 tasks/min, queue depth = 0
-Spike: 10 workers, 100 tasks/min, queue depth = 90
+Normal:     10 workers, 5 tasks/min,   queue depth = 0
+Spike:      10 workers, 100 tasks/min, queue depth = 90
 Saturation: Queue full (max 500), new tasks rejected
 ```
 
 **Backpressure Strategies:**
-1. **Reject immediately:** HTTP 503 "Service Unavailable"
-2. **Queue with timeout:** Accept, fail if not started in 60s
-3. **Shed load:** Drop low-priority tasks first
-4. **Auto-scale:** Spin up new workers (cold start: 45s)
-
-**User Experience:**
-- Graceful error message: "High demand, retry in 30s"
-- Retry-after header for programmatic clients
-- Priority queue for premium tenants
+1. Reject immediately: HTTP 503 "Service Unavailable"
+2. Queue with timeout: accept, fail if not started in 60s
+3. Shed load: drop low-priority tasks first
+4. Auto-scale: spin up new workers (cold start: 45s)
 
 ---
 
@@ -132,22 +130,12 @@ Saturation: Queue full (max 500), new tasks rejected
 
 **Topology:**
 ```
-Region 1: eu-west-2 (London) — Primary
-Region 2: us-east-1 (NYC) — Read replica
+Region 1: eu-west-2 (London)        — Primary
+Region 2: us-east-1 (NYC)           — Read replica
 Region 3: ap-southeast-1 (Singapore) — Read replica
 ```
 
-**Replication Lag Scenarios:**
-- **Normal:** 50-200ms lag (acceptable)
-- **Network congestion:** 2-5 second lag (degraded)
-- **Partition:** 30+ second lag (failover candidate)
-
-**Consistency Models Tested:**
-1. **Strong consistency:** Write to primary, wait for replication (slow)
-2. **Eventual consistency:** Return immediately, replicate async (fast, stale reads possible)
-3. **Read-your-writes:** Route user to primary after write (complex routing)
-
-**Trade-off Analysis:**
+**Consistency Models:**
 - Banking transactions → Strong consistency (correctness > speed)
 - Dashboard analytics → Eventual consistency (speed acceptable)
 - User profile updates → Read-your-writes (UX critical)
@@ -168,30 +156,33 @@ Region 3: ap-southeast-1 (Singapore) — Read replica
 
 ### Running Simulations
 
-**Manual trigger:**
+**From developer-core:**
 ```bash
-cd ~/MetaClaw
-bash ../mirofish-engine/run.sh scaling-stress
+cd ~/developer-core
+bash mirofish/run-simulation.sh scaling-stress
+```
+
+**After delegation — from any project:**
+```bash
+cd ~/vibe-coding   # or guiyon, ss1, etc.
+bash ../developer-core/mirofish/run-simulation.sh scaling-stress
 ```
 
 ---
 
-## Memory Updates
+## Delegation Notes
 
-After each simulation:
+These infrastructure scenarios are **developer-core master scenarios**. When a project needs
+project-specific variants (e.g. BANXE needs FCA-compliant failover), it creates a
+project-specific scenario file that extends the master pattern:
 
-```markdown
-## 2026-04-03 — Scaling Stress Test
-
-**Scenario:** scaling-stress.yml (100 → 10,000 users)  
-**Result:** PASSED with bottlenecks identified  
-**Key Finding:** Redis memory leak at 8,000+ users  
-**Action:** Implement LRU eviction policy in cache layer  
-**Owner:** @bereg2022
+```
+developer-core/mirofish/scenarios/orchestrator-failover.yml  ← master
+vibe-coding/mirofish/scenarios/banxe-fca-failover.yml        ← BANXE extension
 ```
 
 ---
 
-**Source:** `~/developer/docs/MIROFISH-SCENARIOS-MetaClaw.md` (MASTER)  
-**Synced:** N/A (project-specific)  
-**Last Updated:** 2026-04-03
+**Source:** `developer-core/docs/MIROFISH-SCENARIOS-MetaClaw.md` (MASTER — developer-core layer)
+**Layer:** developer-core toolchain (not project-specific)
+**Last Updated:** 2026-04-05

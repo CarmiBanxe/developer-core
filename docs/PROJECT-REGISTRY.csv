@@ -1,5 +1,5 @@
-project|type|onboarded|repos|mirofish|scenarios
-BANXE|banxe|2026-04-03|vibe-coding,collaboration,MetaClaw,banxe-mirofish|yes|banking/FCA/fraud
-ГИЙОН|legal|2026-04-03|guiyon|yes|court/judge/appeal
-СС1|legal|2026-04-03|ss1|yes|court/judge/appeal
-Developer|core|2026-04-03|developer-core|yes|ALL (MASTER)
+project|type|onboarded|repos|mirofish|scenarios|notes
+BANXE|banxe|2026-04-03|vibe-coding,banxe-mirofish|yes|banking/FCA/fraud|AML block = project runtime of MetaClaw toolchain; banxe-lexisnexis-distro is one AML block component
+ГИЙОН|legal|2026-04-03|guiyon|yes|court/judge/appeal|
+СС1|legal|2026-04-03|ss1|yes|court/judge/appeal|
+Developer|core|2026-04-03|developer-core|yes|ALL (MASTER)|MetaClaw = developer-core tool; delegated to all projects via fork

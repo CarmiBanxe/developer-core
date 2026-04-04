@@ -11,7 +11,7 @@
 
 This repository contains **MASTER COPIES** of all MiroFish scenarios used across the ecosystem:
 
-- **Banking scenarios** → Synced to vibe-coding, collaboration, MetaClaw
+- **Banking scenarios** → Synced to vibe-coding (primary BANXE runtime)
 - **Legal scenarios** → Synced to guiyon, ss1
 - **Infrastructure scenarios** → Used in developer-core
 
@@ -28,11 +28,11 @@ This repository contains **MASTER COPIES** of all MiroFish scenarios used across
 | HITL Handoff | `banking/hitl-handoff.yml` | vibe-coding, collaboration | `HITL`, `дублёр` |
 | FCA Sandbox | `banking/pre-fca-sandbox.yml` | vibe-coding | `FCA`, `sandbox` |
 | Fraud Detection | `banking/fraud-social-eng.yml` | vibe-coding, collaboration | `fraud`, `phishing` |
-| Market Reaction | `banking/gtm-reaction.yml` | vibe-coding, MetaClaw | `launch`, `adoption` |
+| Market Reaction | `banking/gtm-reaction.yml` | vibe-coding | `launch`, `adoption` |
 | UX Validation | `banking/ux-validation.yml` | vibe-coding, collaboration | `drop-off`, `conversion` |
-| Stress Test | `banking/fraud-stress-test.yml` | vibe-coding, MetaClaw | `crash`, `crisis` |
+| Stress Test | `banking/fraud-stress-test.yml` | vibe-coding | `crash`, `crisis` |
 | Multi-Agent Conflict | `banking/multi-agent-conflict.yml` | collaboration | `conflict`, `collision` |
-| Distributed TXN | `banking/distributed-txn.yml` | collaboration, MetaClaw | `rollback`, `Saga` |
+| Distributed TXN | `banking/distributed-txn.yml` | vibe-coding | `rollback`, `Saga` |
 
 ### Category 2: Legal & Litigation (ГИЙОН/СС1)
 
@@ -48,15 +48,15 @@ This repository contains **MASTER COPIES** of all MiroFish scenarios used across
 | Procedural Default | `legal/procedural-default.yml` | guiyon, ss1 | `waiver`, `deadline` |
 | Enforcement | `legal/enforcement-collection.yml` | ss1 | `collection`, `recovery` |
 
-### Category 3: Infrastructure & Scaling (MetaClaw/Developer)
+### Category 3: Infrastructure & Scaling (developer-core toolchain)
 
 | Scenario | File | Projects | Auto-trigger |
 |----------|------|----------|--------------|
-| Scaling Stress | `infra/scaling-stress.yml` | MetaClaw, developer-core | `100 to 10000` |
-| Tenant Isolation | `infra/tenant-isolation.yml` | MetaClaw | `multi-tenant` |
-| Orchestrator Failover | `infra/orchestrator-failover.yml` | MetaClaw, developer-core | `failover`, `HA` |
-| Worker Exhaustion | `infra/worker-exhaustion.yml` | MetaClaw | `queue full` |
-| Cross-Region REPL | `infra/cross-region-repl.yml` | MetaClaw | `replication` |
+| Scaling Stress | `infra/scaling-stress.yml` | developer-core | `100 to 10000` |
+| Tenant Isolation | `infra/tenant-isolation.yml` | developer-core | `multi-tenant` |
+| Orchestrator Failover | `infra/orchestrator-failover.yml` | developer-core | `failover`, `HA` |
+| Worker Exhaustion | `infra/worker-exhaustion.yml` | developer-core | `queue full` |
+| Cross-Region REPL | `infra/cross-region-repl.yml` | developer-core | `replication` |
 | Sync Collision | `infra/sync-collision.yml` | developer-core, all | `sync conflict` |
 | MCP Contention | `infra/mcp-contention.yml` | developer-core, all | `MCP overload` |
 | Human-AI Collision | `infra/human-ai-collision.yml` | developer-core, all | `dual control` |
