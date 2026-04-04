@@ -1,0 +1,80 @@
+{
+  "task_id": "auto-generated",
+  "source_instruction": "",
+  "must_do": [
+    "Work only inside approved scope",
+    "Explain failures in plain language",
+    "Stop when task requires forbidden action"
+  ],
+  "must_not_do": [
+    "Do not edit .env, secrets, credentials, tokens, SSH keys",
+    "Do not run destructive shell commands",
+    "Do not change files outside approved scope"
+  ],
+  "files_in_scope": [
+    "src/**",
+    "tests/**",
+    "README.md"
+  ],
+  "tools_allowed": [
+    "Read",
+    "Glob",
+    "Grep",
+    "LS",
+    "Edit",
+    "MultiEdit",
+    "Write",
+    "Bash"
+  ],
+  "bash_allow_regex": [
+    "^pytest( .*)?$",
+    "^python -m pytest( .*)?$",
+    "^python [A-Za-z0-9_./-]+\\.py( .*)?$",
+    "^git status( .*)?$",
+    "^git diff( .*)?$",
+    "^git rev-parse( .*)?$",
+    "^git branch( .*)?$",
+    "^ls( .*)?$",
+    "^find( .*)?$",
+    "^grep( .*)?$",
+    "^rg( .*)?$",
+    "^cat( .*)?$",
+    "^head( .*)?$",
+    "^tail( .*)?$"
+  ],
+  "bash_deny_regex": [
+    "rm -rf",
+    "git push",
+    "git reset --hard",
+    "docker compose down",
+    "docker rm",
+    "docker rmi",
+    "kubectl",
+    "systemctl",
+    "service ",
+    "shutdown",
+    "reboot",
+    "curl .*\\|.*sh",
+    "wget .*\\|.*sh",
+    "chmod -R",
+    "chown -R",
+    "sed -i .*\\.env",
+    "truncate",
+    "mkfs"
+  ],
+  "patch_limits": {
+    "max_files_changed": 10,
+    "max_lines_added": 400,
+    "max_lines_deleted": 200
+  },
+  "acceptance_criteria": [
+    "No forbidden files changed",
+    "Changes stay inside approved scope",
+    "All local verifier checks pass"
+  ],
+  "escalation_rules": [
+    "If action is outside scope: deny",
+    "If command is not allowlisted: deny",
+    "If forbidden file targeted: deny"
+  ]
+}

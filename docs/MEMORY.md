@@ -430,3 +430,31 @@ wsl:
 
 **Last commit:** `9eaff5c` — init: Developer Core — shared components for all projects  
 **Next review:** After Phase 1 deployment completion
+
+## 2026-04-05: collaboration → developer-core (Шаг 1 слияния)
+
+**Статус:** collaboration репо считается частью developer-core toolchain layer.
+
+### Перенесённые уникальные файлы
+
+| Файл | Назначение |
+|------|-----------|
+| `.mcp.json` | MCP конфигурация (Aider CLI server) |
+| `scripts/collab.sh` | Claude Code + Aider CLI launcher (session/worker/run) |
+| `.aider.conf.yml` | Aider project config (model: qwen3-banxe-v2) |
+| `config.ini` | TinyTroupe/simulation config (Ollama endpoint) |
+| `.claude-supervisor/` | Claude supervision hooks (pre_tool_use, stop_check, verifier) |
+| `.claude/settings.json` | Claude Code project settings |
+| `compliance/training/` | Agent training pipeline (corpus JSONL, deepeval, evidently, promptfoo) |
+| `compliance/verification/` | Verification network (orchestrator, policy_agent, workflow_agent) |
+| `.github/workflows/banxe-verification-tests.yml` | GitHub Actions: cross-verification 5 categories |
+| `scripts/install_openrlhf.sh` | OpenRLHF installer (NVIDIA CUDA 12.6, Legion) |
+| `scripts/install_gmktec_trl.sh` | TRL installer (AMD GMKtec, без CUDA) |
+| `docs/CLAUDE-collaboration.md` | Исторический CLAUDE.md collaboration (архив контекста) |
+
+### Статус collaboration репо
+
+- **docs/** — дубликаты developer-core (COLLAB.md, MEMORY.md, MCP-BEST-PRACTICES.md, MIROFISH-SCENARIOS.md)
+- **compliance/** — устаревшие копии vibe-coding/src/compliance/ (за исключением training/ и verification/)
+- **Рекомендация:** архивировать collaboration на GitHub после финального review
+- **Ветки:** master (Qoder CLI era) → main (Aider CLI era, содержит весь уникальный контент)

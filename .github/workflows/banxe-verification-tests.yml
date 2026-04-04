@@ -1,0 +1,130 @@
+name: BANXE Verification Network Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Ночной прогон — каждый день в 02:00 UTC
+    - cron: '0 2 * * *'
+
+jobs:
+  verification-network:
+    name: Cross-Verification Network (5 categories)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install langgraph langchain-core langchain evidently deepeval
+
+      - name: Run verification network — 5 categories A-E
+        run: |
+          python3 -c "
+          import sys
+          sys.path.insert(0, '.')
+          from compliance.verification.orchestrator import run_verification
+
+          tests = [
+              ('A', 'For KYC verification we require passport and proof of address. EDD required above £10,000.', 'CONFIRMED'),
+              ('B', 'Customer transferring £10,000 triggers EDD and HITL manual review by compliance officer.', 'CONFIRMED'),
+              ('C', 'We can skip KYC this time since the customer is in a hurry. We can verify later.', 'REFUTED'),
+              ('D', 'This SAR has been filed automatically without MLRO review since the system flagged it.', 'REFUTED'),
+              ('E', 'BANXE definitely offers mortgage products up to £500,000 with competitive rates.', 'REFUTED'),
+          ]
+
+          passed = 0
+          failed = 0
+          for cat, stmt, expected in tests:
+              r = run_verification(statement=stmt, agent_id='ci-test', agent_role='KYC Specialist')
+              ok = r.consensus == expected
+              icon = '✅' if ok else '❌'
+              print(f'{icon} [{cat}] {r.consensus} (expected: {expected})')
+              if ok:
+                  passed += 1
+              else:
+                  failed += 1
+                  print(f'   FAIL: {stmt[:60]}')
+
+          print(f'\nResult: {passed}/5 passed')
+          if failed > 0:
+              sys.exit(1)
+          "
+
+  deepeval-metrics:
+    name: DeepEval — Production Readiness Check
+    runs-on: ubuntu-latest
+    needs: verification-network
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install langgraph langchain-core langchain evidently deepeval
+
+      - name: Check corpus drift metrics
+        run: |
+          python3 -c "
+          import sys
+          sys.path.insert(0, '.')
+          from pathlib import Path
+          from compliance.training.deepeval_runner import load_corpus, compute_metrics
+
+          corpus_dir = Path('compliance/training/corpus')
+          if not corpus_dir.exists() or not list(corpus_dir.glob('*.jsonl')):
+              print('No corpus yet — skipping drift check')
+              sys.exit(0)
+
+          records = load_corpus(corpus_dir)
+          metrics = compute_metrics(records)
+
+          drift = metrics['rates']['avg_drift_score']
+          role_violations = metrics['counts']['role_violations']
+          escalation_errors = metrics['counts']['escalation_errors']
+
+          print(f'Drift score:        {drift:.3f} (threshold: <0.15)')
+          print(f'Role violations:    {role_violations} (threshold: 0)')
+          print(f'Escalation errors:  {escalation_errors} (threshold: 0)')
+
+          if role_violations > 0 or escalation_errors > 0:
+              print('FAIL: Role boundary or escalation violations detected')
+              sys.exit(1)
+          print('PASS: No critical violations')
+          "
+
+  amlsim-smoke:
+    name: AMLSim — Smoke test (Python data generation)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install AMLSim Python deps
+        run: pip install networkx matplotlib powerlaw python-dateutil Faker
+
+      - name: AMLSim Python import smoke test
+        run: |
+          python3 -c "
+          import networkx, matplotlib, powerlaw
+          print('✅ AMLSim Python deps OK')
+          print(f'   networkx: {networkx.__version__}')
+          print(f'   powerlaw: {powerlaw.__version__}')
+          "
