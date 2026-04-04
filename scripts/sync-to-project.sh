@@ -44,7 +44,7 @@ if [ -z "$1" ]; then
     echo "Usage: bash scripts/sync-to-project.sh <project-name>"
     echo ""
     echo "Available projects:"
-    ls -d "$PROJECTS_DIR"/*/ 2>/dev/null | grep -E "(vibe-coding|collaboration|guiyon|MetaClaw)" | xargs -n1 basename || echo "  (none found)"
+    ls -d "$PROJECTS_DIR"/*/ 2>/dev/null | grep -E "(vibe-coding|collaboration|guiyon|MetaClaw|ss1)" | xargs -n1 basename || echo "  (none found)"
     echo ""
     exit 1
 fi
