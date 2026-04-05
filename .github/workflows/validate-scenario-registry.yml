@@ -1,0 +1,83 @@
+name: Validate Scenario Registry
+
+on:
+  push:
+    paths:
+      - 'compliance/training/scenarios/scenario_registry.yaml'
+      - 'compliance/training/scenarios/scenario_registry.schema.json'
+  pull_request:
+    paths:
+      - 'compliance/training/scenarios/scenario_registry.yaml'
+      - 'compliance/training/scenarios/scenario_registry.schema.json'
+
+jobs:
+  validate-registry:
+    name: AMLTRIX schema validation (ADR-007)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install jsonschema pyyaml
+
+      - name: Validate scenario_registry.yaml against schema
+        run: |
+          python - <<'PYEOF'
+          import json, yaml, jsonschema, sys
+          from pathlib import Path
+
+          schema_path = Path("compliance/training/scenarios/scenario_registry.schema.json")
+          registry_path = Path("compliance/training/scenarios/scenario_registry.yaml")
+
+          with open(schema_path) as f:
+              schema = json.load(f)
+
+          with open(registry_path) as f:
+              data = yaml.safe_load(f)
+
+          try:
+              jsonschema.validate(instance=data, schema=schema)
+              scenarios = data.get("scenarios", [])
+              print(f"scenario_registry.yaml is valid ({len(scenarios)} scenarios)")
+
+              # Report pending AMLTRIX review backlog
+              pending = [s for s in scenarios if s.get("amltrix_pending_review") is True]
+              if pending:
+                  print(f"AMLTRIX pending review backlog ({len(pending)}):")
+                  for s in pending:
+                      print(f"  {s['id']} [{s['category']}] {s['name']}")
+
+          except jsonschema.ValidationError as e:
+              print(f"Validation failed: {e.message}")
+              print(f"   Path: {list(e.path)}")
+              sys.exit(1)
+          except jsonschema.SchemaError as e:
+              print(f"Schema error: {e.message}")
+              sys.exit(1)
+          PYEOF
+
+      - name: Check for unresolved pending reviews (warn only)
+        run: |
+          python - <<'PYEOF'
+          import yaml, sys
+          from pathlib import Path
+
+          with open("compliance/training/scenarios/scenario_registry.yaml") as f:
+              data = yaml.safe_load(f)
+
+          scenarios = data.get("scenarios", [])
+          pending = [s for s in scenarios if s.get("amltrix_pending_review") is True]
+
+          if len(pending) > 5:
+              print(f"WARNING: {len(pending)} scenarios have amltrix_pending_review: true")
+              print("Consider resolving backlog items at the next quarterly review.")
+              # Warn only — do not fail CI
+          else:
+              print(f"Pending review backlog: {len(pending)} (within acceptable limit)")
+          PYEOF

@@ -12,13 +12,15 @@
 # To close a pending review: either add mapping or create an ADR documenting why none applies,
 #   then set amltrix_pending_review: false.
 
+# Required by schema (draft-07): root-level amltrix_catalog_version
+amltrix_catalog_version: "2025-Q4"
+
 meta:
   schema_version: "1.0.0"
   created: "2026-04-05"
   jurisdiction: UK
   regulator: FCA
   policy_framework: "MLR 2017"
-  amltrix_version_pin: "2025-Q4"
   review_cycle: quarterly
   maintainer: developer-core
 
@@ -294,7 +296,8 @@ scenarios:
     policy_refs:
       - "PSR 2024 — Mandatory reimbursement"
       - "FCA COB 2.1"
-    linked_rules: []
+    linked_rules:
+      - TBD-APP-FRAUD-DETECTION   # placeholder — no engine coverage yet (2026-Q2)
     linked_engines: []
     expected_decision: HOLD
     status: active
