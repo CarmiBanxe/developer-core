@@ -310,3 +310,118 @@ Thresholds:
 Auto-SAR: ≥85 OR sanctions_hit
 ═══════════════════════════════════════
 ```
+
+
+## Jurisdiction Classification (Updated 2026-04-05)
+
+**Authority:** OFAC, UK OFSI, EU Sanctions, FATF, EU AML High-Risk List, Banxe internal policy
+**Change protocol:** Same as all invariants (§Change protocol above)
+
+### Regulatory Layers (all apply simultaneously for UK EMI)
+
+| Priority | Authority | Scope |
+|----------|-----------|-------|
+| 1 | OFAC (USA) | USD correspondence + secondary sanctions |
+| 2 | UK OFSI / UK Sanctions List | Mandatory for UK EMI (OFSI Consolidated → UK Sanctions List since 28.01.2026) |
+| 3 | EU Sanctions | EUR settlements + EU operations |
+| 4 | FATF / EU AML High-Risk List | EDD requirement (not auto-block) |
+
+**Critical distinction:** FATF Grey List ≠ transaction ban. It requires EDD, not automatic blocking.
+
+### Category A: HARD BLOCK (Restricted — all regulators)
+
+Transactions **unconditionally prohibited**. Code ref: `_HARD_BLOCK_JURISDICTIONS` in `compliance_validator.py`
+
+| Code | Country/Region | OFAC | EU | UK | FATF | Banxe |
+|------|---------------|------|----|----|------|-------|
+| RU | Russia | Sectoral | Sanctions + AML HR (29.01.2026) | Yes | No | Restricted |
+| BY | Belarus | Sectoral | Yes | Yes | — | Restricted |
+| IR | Iran | Full embargo | Yes | Yes | Blacklist | Restricted |
+| KP | North Korea (DPRK) | Full embargo | Yes | Yes | Blacklist | Restricted |
+| CU | Cuba | Full embargo | — | Yes | — | Restricted |
+| MM | Myanmar | Targeted | Yes | Yes | Enhanced | Restricted |
+| AF | Afghanistan | Targeted | — | Yes | — | Restricted |
+| VE | Venezuela | Gov. blocked | Yes | Yes | Greylist | Restricted |
+| CRIMEA | Crimea | Regional embargo | Yes | Yes | — | (Russia) |
+| DNR | Donetsk | Regional embargo | Yes | Yes | — | (Russia) |
+| LNR | Luhansk | Regional embargo | Yes | Yes | — | (Russia) |
+
+### Category B: HIGH RISK (EDD mandatory)
+
+Countries in FATF greylist and/or EU AML High-Risk List. Code ref: `_HIGH_RISK_JURISDICTIONS` in `compliance_validator.py`
+
+| Code | Country | EU AML HR | FATF Grey | Notes |
+|------|---------|-----------|-----------|-------|
+| SY | Syria | Yes (since 2016) | Yes | OFAC comprehensive sanctions LIFTED 01.07.2025; SDN entries remain for Assad circle |
+| IQ | Iraq | — | — | EU targeted sanctions; Banxe High |
+| LB | Lebanon | Yes (05.08.2025) | Yes | EU targeted sanctions |
+| YE | Yemen | — | Yes | Conflict program |
+| HT | Haiti | Yes (13.03.2022) | Yes | — |
+| ML | Mali | Yes (13.03.2022) | — | Conflict program |
+| DZ | Algeria | Yes (05.08.2025) | Yes | NEW 2025 |
+| AO | Angola | Yes (05.08.2025) | Yes | NEW 2025 |
+| BO | Bolivia | Yes (29.01.2026) | Yes | NEW 2026 |
+| VG | British Virgin Islands | Yes (29.01.2026) | Yes (06.2025) | NEW 2025-2026 |
+| CM | Cameroon | Yes (18.10.2023) | Yes | — |
+| CI | Cote d'Ivoire | Yes (05.08.2025) | Yes | — |
+| CD | DR Congo | Yes (16.03.2023) | Yes | Conflict program |
+| KE | Kenya | Yes (05.08.2025) | Yes | NEW 2024 |
+| LA | Laos | Yes (05.08.2025) | Yes | — |
+| MC | Monaco | Yes (05.08.2025) | Yes | NEW 2024 |
+| NA | Namibia | Yes (05.08.2025) | Yes | NEW 2024 |
+| NP | Nepal | Yes (05.08.2025) | Yes | NEW 2025 |
+| SS | South Sudan | Yes (13.03.2022) | Yes | Conflict program |
+| TT | Trinidad and Tobago | Yes (06.03.2018) | — | — |
+| VU | Vanuatu | Yes (23.09.2016) | — | — |
+| BG | Bulgaria | — | Yes | FATF only (2024) |
+| VN | Vietnam | — | Yes | FATF only |
+
+### Category C: ELEVATED RISK (operator discretion)
+
+Not formally sanctioned but restricted by payment networks and peer EMIs (Revolut, MultiPass):
+
+AM (Armenia), AZ (Azerbaijan), GE (Georgia), KZ (Kazakhstan), KG (Kyrgyzstan),
+TJ (Tajikistan), UZ (Uzbekistan), TR (Turkey), AE (UAE), IL (Israel),
+RS (Serbia), CN (China), HK (Hong Kong), PK (Pakistan), TH (Thailand)
+
+### Key Changes 2025-2026
+
+#### Lifted (access expanded)
+- **Syria** — OFAC comprehensive sanctions lifted 01.07.2025 (EO 14312); EU/UK also lifted most restrictions. Targeted SDN entries remain (Assad circle, ISIS/AQ, Iran proxies)
+- Burkina Faso, Mozambique, Nigeria, South Africa — removed from FATF greylist (October 2025)
+- Burkina Faso, Mali, Mozambique, Nigeria, South Africa, Tanzania — removed from EU AML HR (December 2025)
+
+#### Added (restrictions tightened)
+- **Russia** → EU AML High-Risk List (29.01.2026) — autonomous EU decision, NOT FATF-driven
+- Bolivia → EU AML HR + FATF greylist (01.2026)
+- British Virgin Islands → EU AML HR + FATF greylist (06.2025 / 01.2026)
+- Nepal → FATF greylist (2025)
+
+### Syria — Special Status
+
+Syria requires special handling post-July 2025:
+- **NOT** auto-blocked (OFAC comprehensive lifted)
+- **HOLD + manual SDN check** required
+- Remaining sanctions: Assad regime, human rights violators, ISIS/Al-Qaeda, Iran proxies
+- EU AML High-Risk status may persist independently
+- Banxe internal policy still lists Syria as Restricted — **policy update pending**
+
+### Source Weights for Sanctions Screening
+
+(moved from above for completeness — weights unchanged)
+
+| Source | Weight | Category |
+|--------|--------|----------|
+| OFAC SDN | 40% | Sanctions |
+| EU Consolidated | 30% | Sanctions |
+| UK HMT / UK Sanctions List | 30% | Sanctions |
+| PEP Database | 20% | Adverse media |
+| adverse_media | 15% | Negative news |
+| Crypto AML | 10% | Blockchain analysis |
+| Velocity checks | 5% | Behavioral |
+
+### Implementation Note
+
+The `compliance_validator.py` must be updated to reflect Category B expansion.
+Current code has minimal `_HIGH_RISK_JURISDICTIONS = {SY, IQ, LB, YE, HT, ML}`.
+Full list from this section should be synchronized.
