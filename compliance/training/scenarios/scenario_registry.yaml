@@ -66,6 +66,10 @@ scenarios:
         mode: rule
         rule_id: SUBJECT_JURISDICTION_A
         enabled: true
+      - id: case_orchestrator
+        mode: rule
+        rule_id: ESCALATE_JURISDICTION_A
+        enabled: true
     expected_decision: REJECT
     status: active
     review_cycle: quarterly
@@ -99,6 +103,10 @@ scenarios:
         mode: rule
         rule_id: SANCTIONS_PROBABLE
         enabled: true
+      - id: sanctions_check
+        mode: ml
+        rule_id: MODEL-YENTE-FUZZY-NAME
+        enabled: false   # Phase 3: enable after Yente :8086 health-checked (ADR-009)
     expected_decision: REJECT
     status: active
     review_cycle: quarterly
