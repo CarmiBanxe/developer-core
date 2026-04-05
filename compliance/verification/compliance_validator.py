@@ -6,9 +6,17 @@ Authority: FCA MLR 2017, OFAC, EMD2, SAMLA 2018
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import Optional
+
+
+# ── Jurisdiction / policy scope ──────────────────────────────────────────────
+# BANXE canonical compliance baseline. Project-specific runtime may extend this
+# scope, but developer-core validators default to UK FCA EMI policy framing.
+_POLICY_JURISDICTION = "UK"        # FCA EMI — source of truth for policy scope
+_POLICY_REGULATOR    = "FCA"       # Authorising regulator
+_POLICY_FRAMEWORK    = "MLR 2017"  # Money Laundering Regulations (primary framework)
 
 
 class Verdict(str, Enum):
@@ -23,6 +31,11 @@ class VerificationResult:
     rule: Optional[str]
     reason: str
     confidence: float  # 0.0–1.0
+    policy_scope: dict[str, str] = field(default_factory=lambda: {
+        "jurisdiction": _POLICY_JURISDICTION,
+        "regulator":    _POLICY_REGULATOR,
+        "framework":    _POLICY_FRAMEWORK,
+    })
 
 
 # Regulatory rules — immutable (change requires MLRO approval)

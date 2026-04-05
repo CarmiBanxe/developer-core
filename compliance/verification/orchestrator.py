@@ -16,7 +16,7 @@ import json
 import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
@@ -75,6 +75,7 @@ class ConsensusResult:
     correction_source: Optional[str]
     hitl_required: bool
     timestamp: str
+    policy_scope: dict[str, str] = field(default_factory=dict)
 
 
 def run_verification(
@@ -198,6 +199,7 @@ def run_verification(
         correction_source=correction_source,
         hitl_required=hitl_required,
         timestamp=datetime.now(timezone.utc).isoformat(),
+        policy_scope=cv.policy_scope,
     )
 
     # Write to training corpus if flagged
