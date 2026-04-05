@@ -1,8 +1,8 @@
 # MEMORY.md — Developer Core Long-Term Memory
 
 **Repository:** `~/developer/`  
-**Last Updated:** 2026-04-03 (Three-Partner Infrastructure Update)  
-**Version:** 3.0
+**Last Updated:** 2026-04-05 (Verification Pipeline + Canonical Terminology)  
+**Version:** 4.0
 
 ---
 
@@ -458,3 +458,189 @@ wsl:
 - **compliance/** — устаревшие копии vibe-coding/src/compliance/ (за исключением training/ и verification/)
 - **Рекомендация:** архивировать collaboration на GitHub после финального review
 - **Ветки:** master (Qoder CLI era) → main (Aider CLI era, содержит весь уникальный контент)
+
+---
+
+## 2026-04-05: Canonical Terminology + Verification Pipeline (v4.0)
+
+**Session summary:** Два крупных блока работ — (1) фиксация канонической архитектурной терминологии в developer-core docs, (2) создание verification pipeline для Banxe AI Bank.
+
+---
+
+### 1. Canonical Delegation Model (ARCHITECTURE.md v2.0)
+
+**Решение:** MetaClaw = developer-core инструмент. НЕ BANXE-специфический продукт.
+
+**Иерархия:**
+```
+developer-core toolchain
+    ↓ fork / delegate
+project runtime (vibe-coding, guiyon, ss1, ...)
+    ↓ operates as
+project-specific operational layer
+```
+
+**Проектные манифестации MetaClaw:**
+| Проект | Название | Примечание |
+|--------|----------|------------|
+| BANXE (vibe-coding) | **AML block** | banxe-lexisnexis-distro — один компонент AML block |
+| GUIYON | Legal AI layer | |
+| SS1 | Legal AI layer | |
+
+**Изменённые файлы:**
+- `docs/ARCHITECTURE.md` — полная перезапись v2.0 (3 уровня: dev partners → tools → project runtime)
+- `docs/MIROFISH-SCENARIOS-MetaClaw.md` — header: Layer: developer-core toolchain (не Project: MetaClaw)
+- `docs/MIROFISH-SCENARIOS.md` — удалена колонка MetaClaw из banking matrix
+- `docs/MIROFISH-SCENARIOS-banxe-mirofish.md` — MetaClaw убран из sync targets
+- `docs/PROJECT-REGISTRY.csv` — BANXE repos: `vibe-coding,banxe-mirofish` (MetaClaw удалён как BANXE repo)
+
+**Коммиты:** `6947ba9` (terminology fix), `27bf885` (collaboration merge), `dc8402f` (ss1 in sync-targets)
+
+---
+
+### 2. Ветки и структура репо
+
+- **master → main**: `~/developer` переведён на `main`, `origin/master` удалена
+- **ss1 в sync-targets**: добавлен в `scripts/sync-to-project.sh` и `docs/PROJECT-REGISTRY.csv`
+- **collaboration → developer-core**: слияние завершено (commit `27bf885`), см. раздел 2026-04-05 выше
+- **PENDING (user browser)**: архивировать `CarmiBanxe/collaboration` → Settings → Danger Zone → Archive
+
+---
+
+### 3. Qoder CLI → Aider CLI (миграция завершена)
+
+- `docs/COLLAB.md` v4.0 — Qoder заменён Aider CLI
+- `.aider.conf.yml` — конфигурация Aider (model: qwen3-banxe-v2)
+- `.mcp.json` — MCP сервер Aider (из collaboration/main)
+- Qoder-ссылки остаются в ряде скриптов (sync-all.sh, sync-to-project.sh) — не критично, рефакторинг отложен
+
+---
+
+### 4. Verification Pipeline (vibe-coding / developer-core compliance)
+
+#### 4a. Архитектура верификации (3 агента + оркестратор)
+
+```
+run_verification(statement)
+    ↓ параллельно (ThreadPoolExecutor)
+    ├─ compliance_validator.py  — L1: FCA/AML regulatory rules
+    ├─ policy_agent.py          — L2: BANXE product policy + limits
+    └─ workflow_agent.py        — L3: HITL/MLRO routing + role boundaries
+    ↓ consensus 2/3 + hard overrides
+ConsensusResult {consensus, confidence, drift_score, hitl_required, correction}
+```
+
+**Hard overrides (нельзя обойти 2/3):**
+- Compliance Validator REFUTED confidence=1.0 → всегда REFUTED
+- Workflow Agent REFUTED confidence≥0.95 → всегда REFUTED
+- Policy Agent REFUTED confidence≥0.90 + rule=EMI scope → всегда REFUTED
+
+#### 4b. Критический баг — исправлен 2026-04-05
+
+**Statement:** `"Approve this PEP client without EDD"`  
+**До фикса:** `CONFIRMED` (2/3 — false positive, нарушение FCA MLR 2017 §4)  
+**После фикса:** `REFUTED` (confidence 1.0, rule: FCA MLR 2017 §3 / AML Red Line)
+
+**Причина:** `without\s+edd` отсутствовал в `_FORBIDDEN_PATTERNS` (compliance_validator.py)
+
+**Добавленные паттерны:**
+```python
+r"without\s+edd",
+r"without\s+enhanced\s+due\s+diligence",
+r"approve\s+without\s+(check|review|screening|kyc|edd|verification|...)",
+r"pep.*without\s+(edd|enhanced|due\s+diligence|review|hitl|mlro)",
+r"approve.*pep.{0,40}without",
+```
+
+**Покрытие rule-based системы:** ~72% (пропускает семантические перефразировки)
+
+#### 4c. CI/CD для training tools
+
+| Инструмент | Где | Триггер |
+|---|---|---|
+| `banxe-verification-tests.yml` | GitHub Actions | push `src/compliance/**` |
+| `training-quality-report.yml` | GitHub Actions | push corpus + пн 03:00 UTC |
+| `run-adversarial-sim.sh` | GMKtec cron | вс 02:00 (`/etc/cron.d/banxe-adversarial`) |
+
+#### 4d. Verify-Statement Skill (порт 8094)
+
+**Сервис:** `banxe-verify-api.service` — HTTP wrapper над orchestrator
+
+```
+GET http://127.0.0.1:8094/verify?statement=<text>&agent_role=<role>
+→ {"consensus":"REFUTED","hitl_required":true,"reason":"without EDD","rule":"FCA MLR 2017 §3",...}
+```
+
+**Интеграция с OpenClaw агентами:**
+- SOUL.md compliance agent: добавлен блок "VERIFY BEFORE SEND"
+- SOUL.md kyc agent: добавлен блок "VERIFY BEFORE SEND"
+- Skill doc: `workspace-moa/skills/verify-statement/SKILL.md`
+- Port history: 8091 (HITL Dashboard) → 8092 (Guiyon bridge_api.py) → **8094** ✅
+
+**Статус:** `systemctl status banxe-verify-api` → active (running)
+
+#### 4e. Roadmap: LLM-as-judge (Layer 4)
+
+- Подключать ТОЛЬКО после ≥500 реальных записей в corpus
+- Вызывать ТОЛЬКО для `UNCERTAIN` случаев (не overrule rule-based REFUTED)
+- Модель: qwen3-banxe-v2 (уже на GMKtec)
+- Endpoint: `/verify-semantic` — отдельный от `/verify`
+
+---
+
+### 5. Training Data Pipeline
+
+- `extract-training-data.yml` — GitHub Actions, копирует corpus A-E в `CarmiBanxe/banxe-training-data`
+- `backup-clickhouse-training.sh` — ежемесячный экспорт `banxe.audit_trail` → D-decisions
+- Corpus: `/data/banxe-training/` на GMKtec + `banxe-training-data` на GitHub
+- `TRAINING_DATA_TOKEN` secret → fine-grained PAT от CarmiBanxe ✅
+
+---
+
+### 6. SOUL.md Protection (реализовано 2026-04-04)
+
+- **Проблема**: OpenClaw перезаписывал SOUL.md при рестарте gateway
+- **3-layer защита:**
+  1. `chattr +i` на обоих workspace SOUL.md
+  2. `soul-protected/SOUL.md` — canonical source (3086 bytes)
+  3. SOUL GUARD в `memory-autosync-watcher.sh` — md5 hash-check каждые 5 мин
+- **Управление:** `bash scripts/protect-soul.sh [deploy|update|unlock|status]`
+
+---
+
+## Текущее состояние портов GMKtec
+
+| Порт | Сервис | Статус |
+|------|--------|--------|
+| 11434 | Ollama | active |
+| 18789 | OpenClaw @mycarmi_moa_bot | active |
+| 18791 | OpenClaw CTIO бот | active |
+| 18793 | OpenClaw @mycarmibot | active |
+| 9000 | ClickHouse | active |
+| 8084 | Moov Watchman | active |
+| 8085 | Banxe Screener | active |
+| 8088 | Deep Search | active |
+| 8089 | PII Proxy (Presidio) | active |
+| 8090 | Compliance API (FastAPI) | active |
+| 8091 | HITL Dashboard | active |
+| 8092 | Guiyon bridge_api.py | active |
+| **8094** | **Verify Statement API** | **active (new)** |
+| 5001 | Jube TM | active |
+| 5002 | Marble API | active |
+| 5003 | Marble UI | active |
+| 5678 | n8n | active |
+| 443/80 | nginx | active |
+
+---
+
+## Pending (после 2026-04-05)
+
+| Задача | Кто | Статус |
+|--------|-----|--------|
+| Архивировать `CarmiBanxe/collaboration` | Марк (browser) | PENDING |
+| CTIO бот токен (порт 18791) | Марк → @BotFather | PENDING |
+| Vendor API интеграции | Марк (вендоры не ответили) | PENDING |
+| HITL Dashboard (vibe-coding) | Dev | PENDING |
+| LLM-as-judge Layer 4 | Dev | AFTER 500+ corpus records |
+| Adversarial sim первый прогон | Автоматически (вс 02:00) | SCHEDULED |
+
