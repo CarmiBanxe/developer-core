@@ -1,0 +1,325 @@
+# scenario_registry.yaml — BANXE canonical AML scenario taxonomy
+# AMLTRIX version pin: 2025-Q4  (https://amltrix.com)
+# Policy baseline:     UK FCA EMI, MLR 2017
+#
+# Source classification:
+#   amltrix  — mapped to AMLTRIX tactic + technique (tactic_id/technique_id/amltrix_version required)
+#   hybrid   — BANXE-specific scenario with AMLTRIX mapping (same requirements)
+#   internal — no AMLTRIX equivalent; amltrix_pending_review required (true = open backlog item)
+#
+# Governance: quarterly review cycle.
+# To add an internal scenario without AMLTRIX mapping: set amltrix: null, amltrix_pending_review: true.
+# To close a pending review: either add mapping or create an ADR documenting why none applies,
+#   then set amltrix_pending_review: false.
+
+meta:
+  schema_version: "1.0.0"
+  created: "2026-04-05"
+  jurisdiction: UK
+  regulator: FCA
+  policy_framework: "MLR 2017"
+  amltrix_version_pin: "2025-Q4"
+  review_cycle: quarterly
+  maintainer: developer-core
+
+
+scenarios:
+
+  # ── Category A: hard rules (sanctions, jurisdiction blocks) ──────────────────
+
+  - id: SCN-001
+    name: "Category A jurisdiction transaction"
+    description: >
+      Transaction originating from or destined to a hard-block jurisdiction
+      (RU, BY, IR, KP, CU, MM, AF, VE, Crimea, DNR, LNR).
+      Composite score ceiling = 100; priority P1 override.
+    source: hybrid
+    jurisdiction: UK
+    category: A
+    amltrix:
+      tactic_id: "TA-001"         # Placement
+      technique_id: "T-006"       # Jurisdiction Arbitrage
+      amltrix_version: "2025-Q4"
+    policy_refs:
+      - "SAMLA 2018"
+      - "UK HMT Consolidated List"
+      - "OFAC SDN"
+      - "ADR-008"
+    linked_rules:
+      - HARD_BLOCK_JURISDICTION
+      - SUBJECT_JURISDICTION_A
+      - CUSTOMER_JURISDICTION_A
+    linked_engines:
+      - sanctions_check
+      - tx_monitor
+    expected_decision: REJECT
+    status: active
+    review_cycle: quarterly
+
+  - id: SCN-002
+    name: "Confirmed sanctions hit (Watchman match ≥ 0.80)"
+    description: >
+      Entity name matches OFAC/UN/EU/UK HMT consolidated list with
+      Jaro-Winkler similarity ≥ 0.80 (COMPLIANCE_ARCH invariant I-02).
+      Requires MLRO review; SAR obligation may apply.
+    source: amltrix
+    jurisdiction: UK
+    category: A
+    amltrix:
+      tactic_id: "TA-001"         # Placement
+      technique_id: "T-010"       # Sanctions Evasion — Name Obfuscation
+      amltrix_version: "2025-Q4"
+    policy_refs:
+      - "SAMLA 2018"
+      - "FCA MLR 2017 §14"
+      - "COMPLIANCE_ARCH.md — I-02 (Watchman minMatch=0.80)"
+    linked_rules:
+      - SANCTIONS_CONFIRMED
+      - SANCTIONS_PROBABLE
+    linked_engines:
+      - sanctions_check
+    expected_decision: REJECT
+    status: active
+    review_cycle: quarterly
+
+
+  # ── Category B: edge cases (EDD/HOLD triggers) ───────────────────────────────
+
+  - id: SCN-003
+    name: "Category B jurisdiction (EDD floor)"
+    description: >
+      Transaction involving FATF greylist or EU AML High-Risk country.
+      Minimum decision = HOLD regardless of score; EDD mandatory (FCA EDD §4.2).
+    source: hybrid
+    jurisdiction: UK
+    category: B
+    amltrix:
+      tactic_id: "TA-001"
+      technique_id: "T-006"       # Jurisdiction Arbitrage
+      amltrix_version: "2025-Q4"
+    policy_refs:
+      - "FCA EDD §4.2"
+      - "FATF Recommendation 10"
+      - "ADR-008"
+    linked_rules:
+      - HIGH_RISK_JURISDICTION
+      - CUSTOMER_JURISDICTION_B
+    linked_engines:
+      - tx_monitor
+      - sanctions_check
+    expected_decision: HOLD
+    status: active
+    review_cycle: quarterly
+
+  - id: SCN-004
+    name: "PEP customer — EDD mandatory"
+    description: >
+      Customer flagged as Politically Exposed Person (domestic/foreign/IO/RCA).
+      Score floor = HOLD; senior management approval required per FCA EDD §4.1.
+    source: hybrid
+    jurisdiction: UK
+    category: B
+    amltrix:
+      tactic_id: "TA-003"         # Integration
+      technique_id: "T-025"       # Use of PEP-related accounts
+      amltrix_version: "2025-Q4"
+    policy_refs:
+      - "FCA EDD §4.1"
+      - "MLR 2017 §35"
+    linked_rules:
+      - CUSTOMER_PEP
+    linked_engines:
+      - sanctions_check
+    expected_decision: HOLD
+    status: active
+    review_cycle: quarterly
+
+  - id: SCN-005
+    name: "Transaction >£10,000 — HITL + EDD"
+    description: >
+      Single transaction exceeding SOUL.md threshold. HITL mandatory.
+      Specific to UK FCA EMI framework; no direct AMLTRIX technique applies.
+    source: internal
+    jurisdiction: UK
+    category: B
+    amltrix: null
+    amltrix_pending_review: false   # FCA-specific threshold, not a money-movement technique
+    policy_refs:
+      - "FCA EDD §4.2"
+      - "SOUL.md §ШАГ 2"
+    linked_rules:
+      - AMOUNT_THRESHOLD_EDD
+    linked_engines:
+      - tx_monitor
+    expected_decision: HOLD
+    status: active
+    review_cycle: quarterly
+
+
+  # ── Category C: red lines (forbidden patterns, criminal typologies) ──────────
+
+  - id: SCN-006
+    name: "Structuring below FPS/CHAPS threshold (smurfing)"
+    description: >
+      Multiple sub-threshold transactions designed to avoid £10k reporting trigger.
+      structuring_hint flag OR velocity pattern across 24h window.
+      Criminal offence under POCA 2002 §327.
+    source: amltrix
+    jurisdiction: UK
+    category: C
+    amltrix:
+      tactic_id: "TA-002"         # Layering
+      technique_id: "T-047"       # Structuring / Smurfing
+      amltrix_version: "2025-Q4"
+    policy_refs:
+      - "POCA 2002 §327"
+      - "FCA MLR 2017 §7"
+      - "COMPLIANCE_ARCH.md — forbidden pattern: structure.*payment"
+    linked_rules:
+      - TX_STRUCTURING
+      - TX_VELOCITY_24H
+    linked_engines:
+      - tx_monitor
+    expected_decision: SAR
+    status: active
+    review_cycle: quarterly
+
+  - id: SCN-007
+    name: "Crypto mixer / tumbling service"
+    description: >
+      Wallet address associated with mixing/tumbling service, darknet market,
+      ransomware attribution, or rapid-in-out layering pattern.
+    source: amltrix
+    jurisdiction: UK
+    category: C
+    amltrix:
+      tactic_id: "TA-002"         # Layering
+      technique_id: "T-089"       # Use of Mixing / Tumbling Services
+      amltrix_version: "2025-Q4"
+    policy_refs:
+      - "FATF Recommendation 15"
+      - "FCA MLR 2017 §14"
+    linked_rules:
+      - CRYPTO_MIXER
+      - CRYPTO_DARKNET
+      - CRYPTO_SANCTIONS
+    linked_engines:
+      - crypto_aml
+    expected_decision: REJECT
+    status: active
+    review_cycle: quarterly
+
+  - id: SCN-008
+    name: "KYC bypass or deferred verification"
+    description: >
+      Agent statement suggests approving a transaction without completing KYC,
+      or proposes deferring verification. Matches forbidden patterns in
+      compliance_validator (_FORBIDDEN_PATTERNS: bypass kyc, verify later, without kyc).
+    source: internal
+    jurisdiction: UK
+    category: C
+    amltrix: null
+    amltrix_pending_review: false   # operational procedure gap, not a money-movement technique
+    policy_refs:
+      - "FCA MLR 2017 §28"
+      - "COMPLIANCE_ARCH.md — forbidden patterns: bypass kyc, verify later"
+    linked_rules:
+      - KYC_BYPASS_PATTERN
+    linked_engines:
+      - compliance_validator
+    expected_decision: REFUTED
+    status: active
+    review_cycle: quarterly
+
+
+  # ── Category D: routing / escalation rules ───────────────────────────────────
+
+  - id: SCN-009
+    name: "SAR filing without MLRO — workflow violation"
+    description: >
+      Agent or automated system attempts to file SAR without MLRO authority.
+      Violates FCA Senior Managers Regime; MLRO is sole authorised filer.
+    source: internal
+    jurisdiction: UK
+    category: D
+    amltrix: null
+    amltrix_pending_review: false   # internal governance / escalation procedure
+    policy_refs:
+      - "FCA Senior Managers Regime"
+      - "NCA SAR guidance"
+      - "SOUL.md §ШАГ 3"
+    linked_rules:
+      - MLRO_BYPASS
+    linked_engines:
+      - workflow_agent
+    expected_decision: REFUTED
+    status: active
+    review_cycle: quarterly
+
+  - id: SCN-010
+    name: "Unacceptable customer risk rating — P4 override"
+    description: >
+      Customer rated 'unacceptable' by internal risk ledger.
+      Priority P4 override: minimum REJECT regardless of transaction score.
+    source: internal
+    jurisdiction: UK
+    category: D
+    amltrix: null
+    amltrix_pending_review: true    # candidate: TA-004 / high-risk customer onboarding
+    policy_refs:
+      - "FCA SYSC — risk appetite"
+      - "COMPLIANCE_ARCH.md — P4 priority override"
+    linked_rules:
+      - CUSTOMER_UNACCEPTABLE_RISK
+    linked_engines:
+      - banxe_aml_orchestrator
+    expected_decision: REJECT
+    status: active
+    review_cycle: quarterly
+
+
+  # ── Category E: uncertainty / emerging typologies ────────────────────────────
+
+  - id: SCN-011
+    name: "FPS redirect — Authorised Push Payment (APP) fraud"
+    description: >
+      Customer redirected to fraudulent payee via social engineering or spoofed
+      communication. PSR mandatory reimbursement from October 2024.
+      AMLTRIX 2026 expected to add explicit APP fraud techniques.
+    source: internal
+    jurisdiction: UK
+    category: E
+    amltrix: null
+    amltrix_pending_review: true    # review when AMLTRIX 2026 releases APP fraud techniques
+    policy_refs:
+      - "PSR 2024 — Mandatory reimbursement"
+      - "FCA COB 2.1"
+    linked_rules: []
+    linked_engines: []
+    expected_decision: HOLD
+    status: active
+    review_cycle: quarterly
+    notes: "Requires dedicated detection model; no existing engine coverage as of 2026-Q2"
+
+  - id: SCN-012
+    name: "High-volume low-value velocity (micropayment layering)"
+    description: >
+      Many sub-£50 transactions within 1h window suggesting layering via micropayments.
+      tx_count_1h and velocity_1h_gbp signals combined.
+    source: hybrid
+    jurisdiction: UK
+    category: E
+    amltrix:
+      tactic_id: "TA-002"         # Layering
+      technique_id: "T-050"       # High-frequency low-value transactions
+      amltrix_version: "2025-Q4"
+    policy_refs:
+      - "FCA MLR 2017 §7"
+      - "JMLSG Part I §5.3"
+    linked_rules:
+      - TX_VELOCITY_24H
+    linked_engines:
+      - tx_monitor
+    expected_decision: HOLD
+    status: active
+    review_cycle: quarterly
