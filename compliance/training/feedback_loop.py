@@ -31,7 +31,7 @@ DEVELOPER_DIR = Path(os.environ.get("DEVELOPER_DIR", Path.home() / "developer"))
 CORPUS_DIR    = DEVELOPER_DIR / "compliance" / "training" / "corpus"
 VIBE_DIR      = Path(os.environ.get("VIBE_DIR", Path.home() / "vibe-coding"))
 SOUL_MD       = VIBE_DIR / "docs" / "SOUL.md"
-AGENTS_MD_LOCAL = DEVELOPER_DIR / "compliance" / "agents.md"  # local reference copy
+AGENTS_MD     = VIBE_DIR / "agents" / "workspace-moa" / "AGENTS.md"  # canonical — deployed to GMKtec
 
 CV_PATH = DEVELOPER_DIR / "compliance" / "verification" / "compliance_validator.py"
 PA_PATH = DEVELOPER_DIR / "compliance" / "verification" / "policy_agent.py"
@@ -414,38 +414,101 @@ def apply_soul_patches(patches: list[dict]) -> int:
     return applied
 
 
+_AGENTS_AUTO_SECTION = "## Auto-Generated Routing Rules"
+
+
 def apply_agents_patches(patches: list[dict]) -> int:
-    """Print agents patches — application via GMKtec SSH."""
+    """Apply workflow routing rule patches to local agents/workspace-moa/AGENTS.md."""
     if not patches:
         return 0
 
-    print("  [INFO] AGENTS.md patches require GMKtec SSH deployment:")
+    if not AGENTS_MD.exists():
+        print(f"  [SKIP] AGENTS.md not found at {AGENTS_MD}")
+        return 0
+
+    content = AGENTS_MD.read_text()
+    applied = 0
+
+    # Ensure the auto-generated section exists
+    if _AGENTS_AUTO_SECTION not in content:
+        content = content.rstrip("\n") + f"\n\n---\n\n{_AGENTS_AUTO_SECTION}\n\n"
+        print(f"  [INIT] Added '{_AGENTS_AUTO_SECTION}' section to AGENTS.md")
+
     for p in patches:
-        print(f"    + {p['line_to_add']}")
-    print("  Run: bash ~/vibe-coding/scripts/apply-feedback.sh --agents-only")
-    return 0  # Not auto-applied locally — requires GMKtec
+        line = p["line_to_add"].strip()
+        if not line:
+            continue
+        if line.lower() in content.lower():
+            print(f"  [SKIP] already in AGENTS.md: {line[:60]}")
+            continue
+        # Insert after the auto-generated section header
+        content = content.replace(
+            _AGENTS_AUTO_SECTION + "\n\n",
+            _AGENTS_AUTO_SECTION + "\n\n" + line + "\n",
+            1
+        )
+        applied += 1
+        print(f"  [APPLY] AGENTS.md: + {line[:80]}")
+
+    if applied:
+        AGENTS_MD.write_text(content)
+
+    return applied
+
+
+def _git_commit_push(repo_dir: Path, files: list[Path], message: str) -> bool:
+    """Stage specific files, commit, pull --rebase, push. Returns True on success."""
+    try:
+        # Only stage files that exist and have changes
+        changed = [str(f) for f in files if f.exists()]
+        if not changed:
+            return True
+        subprocess.run(["git", "-C", str(repo_dir), "add"] + changed, check=True)
+        # Check if anything staged
+        result = subprocess.run(
+            ["git", "-C", str(repo_dir), "diff", "--cached", "--name-only"],
+            capture_output=True, text=True
+        )
+        if not result.stdout.strip():
+            return True
+        subprocess.run(["git", "-C", str(repo_dir), "commit", "-m", message], check=True)
+        subprocess.run(
+            ["git", "-C", str(repo_dir), "pull", "--rebase", "origin", "main", "--quiet"],
+            check=True
+        )
+        subprocess.run(["git", "-C", str(repo_dir), "push"], check=True)
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"  [WARN] Git operation failed: {e}", file=sys.stderr)
+        return False
 
 
 def commit_developer_changes(applied: int) -> None:
-    """Commit any changes to developer-core."""
+    """Commit compliance_validator.py changes to developer-core."""
     if applied == 0:
         return
-    try:
-        result = subprocess.run(
-            ["git", "-C", str(DEVELOPER_DIR), "diff", "--name-only"],
-            capture_output=True, text=True
-        )
-        changed = result.stdout.strip()
-        if not changed:
-            return
-        subprocess.run(["git", "-C", str(DEVELOPER_DIR), "add", "-A"], check=True)
-        msg = f"feat(feedback): apply {applied} corrections from corpus [{datetime.now().strftime('%Y-%m-%d')}]"
-        subprocess.run(["git", "-C", str(DEVELOPER_DIR), "commit", "-m", msg], check=True)
-        subprocess.run(["git", "-C", str(DEVELOPER_DIR), "pull", "--rebase", "origin", "main", "--quiet"], check=True)
-        subprocess.run(["git", "-C", str(DEVELOPER_DIR), "push"], check=True)
-        print(f"  [GIT] Committed and pushed {applied} changes to developer-core")
-    except subprocess.CalledProcessError as e:
-        print(f"  [WARN] Git operation failed: {e}", file=sys.stderr)
+    date_str = datetime.now().strftime("%Y-%m-%d")
+    msg = f"feat(feedback): apply {applied} corrections from corpus [{date_str}]"
+    ok = _git_commit_push(DEVELOPER_DIR, [CV_PATH, PA_PATH, WA_PATH], msg)
+    if ok:
+        print(f"  [GIT] developer-core: committed and pushed {applied} changes")
+
+
+def commit_vibe_changes(soul_applied: int, agents_applied: int) -> None:
+    """Commit SOUL.md and AGENTS.md changes to vibe-coding."""
+    total = soul_applied + agents_applied
+    if total == 0:
+        return
+    parts = []
+    if soul_applied:
+        parts.append(f"SOUL.md ({soul_applied} rules)")
+    if agents_applied:
+        parts.append(f"AGENTS.md ({agents_applied} routing rules)")
+    date_str = datetime.now().strftime("%Y-%m-%d")
+    msg = f"feat(feedback): auto-patch {', '.join(parts)} from corpus [{date_str}]"
+    ok = _git_commit_push(VIBE_DIR, [SOUL_MD, AGENTS_MD], msg)
+    if ok:
+        print(f"  [GIT] vibe-coding: committed and pushed SOUL.md + AGENTS.md")
 
 
 # ─────────────────────────────────────────────
@@ -487,15 +550,18 @@ def main() -> None:
 
     if args.apply:
         print("Applying patches...\n")
-        total_applied = 0
-        total_applied += apply_forbidden_patches(report["forbidden_patches"])
-        total_applied += apply_soul_patches(report["soul_patches"])
-        apply_agents_patches(report["agents_patches"])  # informational only
-        commit_developer_changes(total_applied)
+        cv_applied   = apply_forbidden_patches(report["forbidden_patches"])
+        soul_applied = apply_soul_patches(report["soul_patches"])
+        agents_applied = apply_agents_patches(report["agents_patches"])
+        total_applied = cv_applied + soul_applied + agents_applied
+        commit_developer_changes(cv_applied)
+        commit_vibe_changes(soul_applied, agents_applied)
         print(f"\n[feedback_loop] Done — {total_applied} patches applied")
-        if total_applied > 0:
-            print("[feedback_loop] SOUL.md updated locally — push and run:")
-            print("  ssh gmktec 'bash /data/vibe-coding/scripts/protect-soul.sh update /data/vibe-coding/docs/SOUL.md'")
+        print(f"  compliance_validator.py: {cv_applied}")
+        print(f"  SOUL.md:                 {soul_applied}")
+        print(f"  AGENTS.md:               {agents_applied}")
+        if soul_applied or agents_applied:
+            print("\n[feedback_loop] vibe-coding committed — train-agent.sh --deploy will auto-deploy to GMKtec")
 
 
 if __name__ == "__main__":
