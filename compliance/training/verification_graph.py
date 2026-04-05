@@ -111,26 +111,69 @@ def node_run_verifiers(state: VerificationState) -> dict:
 
 def node_hitl_interrupt(state: VerificationState) -> dict:
     """
-    HITL interrupt node — in production this suspends the graph
-    and waits for human operator input.
-    In this implementation: prints alert and records pending status.
+    HITL interrupt node — calls hitl-bridge.sh to create Marble case and
+    send Telegram notification to MLRO/CEO.
+    Falls back to console alert if bridge script is unavailable.
     """
-    result = state.get("consensus_result", {})
-    print("\n" + "!" * 60)
-    print("  ⚠️  HITL INTERRUPT — HUMAN REVIEW REQUIRED")
-    print("!" * 60)
-    print(f"  Agent:     {state['agent_id']} ({state['agent_role']})")
-    print(f"  Consensus: {state.get('consensus', 'UNKNOWN')}")
-    print(f"  Statement: {state['statement'][:100]}")
-    if result.get("correction"):
-        print(f"  Correction: {result['correction']}")
-        print(f"  Source:     {result['correction_source']}")
-    print("!" * 60)
-    print("  → Flagged for MLRO/Compliance Officer review")
-    print("  → Interaction saved to training corpus")
-    print("!" * 60 + "\n")
+    import subprocess
+    import os
 
-    return {"hitl_resolution": "PENDING_HUMAN_REVIEW"}
+    result = state.get("consensus_result", {})
+    consensus = state.get("consensus", "UNKNOWN")
+    reason = result.get("compliance_reason") or result.get("correction") or "HITL required"
+    drift_score = result.get("drift_score", 0)
+
+    # ── Call hitl-bridge.sh ───────────────────────────────────────────────────
+    BRIDGE_PATHS = [
+        "/data/vibe-coding/scripts/hitl-bridge.sh",
+        os.path.expanduser("~/vibe-coding/scripts/hitl-bridge.sh"),
+    ]
+    bridge_script = next((p for p in BRIDGE_PATHS if os.path.isfile(p)), None)
+
+    marble_case_id = ""
+    if bridge_script:
+        try:
+            env = os.environ.copy()
+            env.update({
+                "HITL_AGENT_ID":   state["agent_id"],
+                "HITL_AGENT_ROLE": state["agent_role"],
+                "HITL_CONSENSUS":  consensus,
+                "HITL_REASON":     str(reason)[:500],
+                "HITL_STATEMENT":  state["statement"][:500],
+                "HITL_DRIFT":      str(drift_score),
+            })
+            proc = subprocess.run(
+                ["bash", bridge_script],
+                capture_output=True, text=True, timeout=15, env=env
+            )
+            # Extract marble_case_id from stdout (format: "marble_case_id=<id>")
+            for line in proc.stdout.splitlines():
+                if line.startswith("marble_case_id="):
+                    marble_case_id = line.split("=", 1)[1].strip()
+                    break
+            if proc.returncode == 0:
+                print(f"[HITL] Bridge OK — marble_case_id={marble_case_id or 'N/A'}")
+            else:
+                print(f"[HITL] Bridge partial/failed (rc={proc.returncode}): {proc.stderr[:200]}")
+        except Exception as exc:
+            print(f"[HITL] Bridge exception: {exc}")
+    else:
+        # Fallback: console alert
+        print("\n" + "!" * 60)
+        print("  HITL INTERRUPT — HUMAN REVIEW REQUIRED")
+        print("!" * 60)
+        print(f"  Agent:     {state['agent_id']} ({state['agent_role']})")
+        print(f"  Consensus: {consensus}")
+        print(f"  Statement: {state['statement'][:100]}")
+        if result.get("correction"):
+            print(f"  Correction: {result['correction']}")
+        print(f"  [hitl-bridge.sh not found at {BRIDGE_PATHS[0]}]")
+        print("!" * 60 + "\n")
+
+    return {
+        "hitl_resolution": "PENDING_HUMAN_REVIEW",
+        "consensus_result": {**result, "marble_case_id": marble_case_id},
+    }
 
 
 def node_training_corpus(state: VerificationState) -> dict:
