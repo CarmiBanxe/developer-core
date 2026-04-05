@@ -32,7 +32,12 @@ _HARD_BLOCK_JURISDICTIONS = {
 }
 
 _HIGH_RISK_JURISDICTIONS = {
-    "SY", "IQ", "LB", "YE", "HT", "ML"
+    # FATF greylist + EU AML High-Risk (updated 2026-04-05)
+    # See COMPLIANCE_ARCH.md §Jurisdiction Classification, Category B
+    "SY", "IQ", "LB", "YE", "HT", "ML",  # original
+    "DZ", "AO", "BO", "VG", "CM", "CI",  # added 2025-2026
+    "CD", "KE", "LA", "MC", "NA", "NP",  # added 2024-2025
+    "SS", "TT", "VU", "BG", "VN",        # FATF/EU AML HR
 }
 
 _THRESHOLD_SAR = 85        # composite score → auto-SAR
