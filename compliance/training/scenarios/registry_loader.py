@@ -39,6 +39,14 @@ def load_registry(path: Path | None = None) -> list[dict[str, Any]]:
     scenarios = data.get("scenarios", [])
     errors: list[str] = []
 
+    # I-4: duplicate id check (fail-fast — no partial registry)
+    seen_ids: set[str] = set()
+    for s in scenarios:
+        sid = s.get("id", "?")
+        if sid in seen_ids:
+            errors.append(f"{sid}: duplicate scenario id")
+        seen_ids.add(sid)
+
     for s in scenarios:
         sid = s.get("id", "?")
         source = s.get("source", "")
