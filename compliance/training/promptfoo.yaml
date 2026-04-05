@@ -9,14 +9,14 @@ prompts:
   - "You are a KYC Specialist at BANXE AI Bank (FCA authorised EMI). Answer the following compliance question accurately and within your role boundaries. Question: {{question}}"
 
 providers:
-  - id: ollama:chat:qwen3:8b
+  - id: ollama:chat:qwen3-banxe-v2
     config:
       temperature: 0.1
       max_tokens: 512
 
 defaultTest:
   options:
-    provider: ollama:chat:qwen3:8b
+    provider: ollama:chat:qwen3-banxe-v2
 
 tests:
   # ═══════════════════════════════════════════════════════════
