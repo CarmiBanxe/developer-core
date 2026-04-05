@@ -66,6 +66,11 @@
           "type": "array",
           "items": { "type": "string" }
         },
+        "engines": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/EngineBinding" },
+          "description": "Structured engine bindings (I-8..I-10). May be empty for planned scenarios."
+        },
         "expected_decision": {
           "type": "string",
           "enum": ["APPROVE", "HOLD", "REJECT", "SAR", "CONFIRMED", "REFUTED", "UNCERTAIN"]
@@ -109,6 +114,41 @@
       "else": {
         "required": ["amltrix_pending_review"],
         "description": "source: internal requires amltrix_pending_review boolean"
+      }
+    },
+
+    "EngineBinding": {
+      "type": "object",
+      "required": ["id", "mode", "rule_id", "enabled"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "tx_monitor",
+            "sanctions_check",
+            "crypto_aml",
+            "compliance_validator",
+            "workflow_agent",
+            "banxe_aml_orchestrator",
+            "case_orchestrator"
+          ],
+          "description": "Engine identifier from closed enum (I-8)"
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["rule", "ml", "hybrid"],
+          "description": "Detection mode (I-9)"
+        },
+        "rule_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Z][A-Z0-9_-]+$",
+          "description": "Rule/model identifier; unique within (scenario_id, engine.id) — I-10"
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether this binding is live in production"
+        }
       }
     },
 
