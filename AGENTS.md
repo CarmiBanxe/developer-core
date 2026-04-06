@@ -28,7 +28,7 @@ All projects use the same four-partner stack:
 | 1 | **Claude Code** | Architect, reviewer, orchestrator | `claude` |
 | 2 | **Ruflo** | Multi-step flow orchestrator | `ruflo/start-ruflo.sh` |
 | 3 | **Aider CLI** | Sole code executor | `scripts/aider-banxe.sh` |
-| 4 | **MiroFish** | Behavioural + regulatory simulator | `:3000/api` |
+| 4 | **MiroFish** | Behavioural + regulatory simulator | `:3001` (UI) / `:5004/health` (API) |
 
 **LiteLLM** = infrastructure model routing layer (not a partner).  
 **MetaClaw/OpenClaw** = platform layer (not a partner).
@@ -204,7 +204,7 @@ bash scripts/sync-all.sh
 
 ### Review-required changes (manual sync)
 
-- Configuration changes (.qoder/config.yml)
+- Configuration changes (ruflo/config.yaml, AGENTS.md)
 - Instruction hierarchy changes (AGENTS.md)
 - Compliance invariant changes (COMPLIANCE_ARCH.md)
 - Script logic changes
@@ -338,6 +338,6 @@ A component is ready for sync when:
 - [x] Create aider-banxe.sh, parallel-verify.sh, ruflo config (Sprint 9)
 - [x] Create docs/subagent-patterns.md (Sprint 9)
 - [ ] Create git post-commit hook for auto-sync
-- [ ] Deploy MiroFish to GMKtec (:3000)
+- [x] Deploy MiroFish to GMKtec (:5004 backend / :3001 frontend UI)
 - [ ] Create project-specific MIROFISH-SCENARIOS.md for all 6 projects
 - [ ] Update MEMORY.md with four-partner stack documentation
