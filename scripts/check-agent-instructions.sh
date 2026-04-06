@@ -68,10 +68,10 @@ else
 fi
 
 # MiroFish
-if curl -sf http://localhost:3001/api/health > /dev/null 2>&1; then
-    echo "✓ MiroFish :3001 — responding"
+if curl -sf http://localhost:5004/health > /dev/null 2>&1; then
+    echo "✓ MiroFish :5004 — responding (frontend :3001)"
 else
-    echo "○ MiroFish :3001 — not deployed"
+    echo "○ MiroFish :5004 — not deployed"
 fi
 echo ""
 
