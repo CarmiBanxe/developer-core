@@ -78,14 +78,16 @@ if [ "$PROJECT_NAME" = "vibe-coding" ]; then
 fi
 echo ""
 
-# Components to sync (always)
+# Components to sync (always) — BANXE AI Stack v2.0
 SYNC_COMPONENTS=(
-    ".qoder/config.yml"
-    ".qoder/context.md"
     "AGENTS.md"
     "docs/COLLAB.md"
-    "docs/MCP-BEST-PRACTICES.md"
+    "docs/subagent-patterns.md"
     "scripts/check-agent-instructions.sh"
+    "scripts/aider-banxe.sh"
+    "scripts/parallel-verify.sh"
+    "ruflo/config.yaml"
+    "ruflo/start-ruflo.sh"
 )
 
 # Compliance components (vibe-coding only)
@@ -157,6 +159,9 @@ echo ""
 # Make scripts executable
 print_header "Setting permissions"
 chmod +x "$PROJECT_PATH/scripts/check-agent-instructions.sh" 2>/dev/null || true
+chmod +x "$PROJECT_PATH/scripts/aider-banxe.sh" 2>/dev/null || true
+chmod +x "$PROJECT_PATH/scripts/parallel-verify.sh" 2>/dev/null || true
+chmod +x "$PROJECT_PATH/ruflo/start-ruflo.sh" 2>/dev/null || true
 print_success "Scripts made executable"
 echo ""
 
