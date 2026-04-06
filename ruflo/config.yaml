@@ -39,7 +39,7 @@ orchestrator:
         - "qwen3-30b"
         - "--auto-commits"
     mirofish:
-      api: "http://localhost:3000/api"
+      api: "http://localhost:3001/api"
 
   # Retry и monitoring
   retry:

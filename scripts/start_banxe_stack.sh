@@ -74,11 +74,11 @@ else
   check_warn "Ruflo config — not found at $RUFLO_CONFIG"
 fi
 
-# MiroFish :3000
-if curl -sf http://localhost:3000/api/health > /dev/null 2>&1; then
-  check_pass "MiroFish :3000 — OK"
+# MiroFish :3001 (3000 reserved by workflow-service/Ballerine)
+if curl -sf http://localhost:3001/api/health > /dev/null 2>&1; then
+  check_pass "MiroFish :3001 — OK"
 else
-  check_warn "MiroFish :3000 — not deployed (run mirofish/install-mirofish.sh)"
+  check_warn "MiroFish :3001 — not deployed (cd /root/developer/mirofish && docker compose up -d)"
 fi
 
 echo ""

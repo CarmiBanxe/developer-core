@@ -27,10 +27,10 @@ for PORT in 18789 18791 18793; do
     echo "  ⚠️  Bot :${PORT} OFFLINE"
 done
 
-echo "=== Step 4: Checking MiroFish :3000 ==="
-curl -sf http://localhost:3000/api/health > /dev/null && \
+echo "=== Step 4: Checking MiroFish :3001 ==="
+curl -sf http://localhost:3001/api/health > /dev/null && \
   echo "✅ MiroFish OK" || \
-  echo "⚠️  MiroFish not deployed (run mirofish/install-mirofish.sh)"
+  echo "⚠️  MiroFish not deployed (cd /root/developer/mirofish && docker compose up -d)"
 
 echo "=== Step 5: Checking Aider ==="
 which aider > /dev/null 2>&1 && \
