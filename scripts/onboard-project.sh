@@ -107,14 +107,16 @@ log "🏷️  Тип проекта: $TYPE"
 
 log "📦 Внедрение общего стека..."
 
-mkdir -p .qoder docs scripts
+mkdir -p docs scripts ruflo
 
 COMMON_FILES=(
     "AGENTS.md"
     "docs/COLLAB.md"
-    "docs/MCP-BEST-PRACTICES.md"
+    "docs/subagent-patterns.md"
     "scripts/check-agent-instructions.sh"
-    ".qoder/config.yml"
+    "scripts/aider-banxe.sh"
+    "scripts/parallel-verify.sh"
+    "ruflo/config.yaml"
 )
 
 for file in "${COMMON_FILES[@]}"; do
@@ -136,9 +138,11 @@ done
 
 log "📄 Настройка context.md (единый для всех проектов)..."
 
-# ЕДИНЫЙ context.md для ВСЕХ проектов (three-partner synergy)
-cp "$SOURCE/.qoder/context.md" .qoder/context.md
-success "  context.md (Three-Partner: Claude + Qoder + MiroFish)"
+# Copy ruflo start script
+if [[ -f "$SOURCE/ruflo/start-ruflo.sh" ]]; then
+    cp "$SOURCE/ruflo/start-ruflo.sh" ruflo/start-ruflo.sh
+    success "  ruflo/start-ruflo.sh (Four-Partner Swarm v2.0)"
+fi
 
 # Копируем MIROFISH-SCENARIOS.md если есть
 if [[ -f "$SOURCE/docs/MIROFISH-SCENARIOS.md" ]]; then
@@ -186,41 +190,24 @@ git add -A
 if git diff --cached --quiet; then
     log "  Нет изменений для коммита (уже всё закоммичено)"
 else
-    git commit -m "$(cat <<'EOF'
-feat: Onboard into synergy infrastructure
+    git commit -m "$(cat <<EOF
+feat: Onboard into BANXE AI Stack v2.0
 
-Project type: TYPE_PLACEHOLDER
-Qoder stack integrated:
+Project: $PROJECT
+Type: $TYPE
+Stack: Four-Partner Swarm (Claude Code + Ruflo + Aider CLI + MiroFish)
+
+Components added:
 - AGENTS.md (agent instructions)
-- .qoder/context.md (execution contract)
-- .qoder/config.yml (Qoder configuration)
-- docs/COLLAB.md (collaboration pattern)
-- docs/MCP-BEST-PRACTICES.md (MCP guide)
-- scripts/check-agent-instructions.sh (diagnostic tool)
-
-Ready for: cd ~/PROJECT_PLACEHOLDER && claude
-
-🤖 Generated with [Qoder][https://qoder.com]
-EOF
-)"
-    # Заменяем плейсхолдеры на реальные значения
-    git commit --amend -m "$(cat <<EOF
-feat: Onboard into synergy infrastructure
-
-Project type: $TYPE
-Qoder stack integrated:
-- AGENTS.md (agent instructions)
-- .qoder/context.md (execution contract)
-- .qoder/config.yml (Qoder configuration)
-- docs/COLLAB.md (collaboration pattern)
-- docs/MCP-BEST-PRACTICES.md (MCP guide)
-- scripts/check-agent-instructions.sh (diagnostic tool)
+- docs/COLLAB.md (collaboration contract v4.0)
+- docs/subagent-patterns.md (RIV/MFR/CA/PDG/MED patterns)
+- ruflo/config.yaml + start-ruflo.sh
+- scripts/aider-banxe.sh (code executor)
+- scripts/parallel-verify.sh (3-model verification)
 
 Ready for: cd ~/$PROJECT && claude
-
-🤖 Generated with [Qoder][https://qoder.com]
 EOF
-)" 2>/dev/null || true
+)"
 fi
 
 # ============================================

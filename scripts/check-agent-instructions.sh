@@ -1,11 +1,11 @@
 #!/bin/bash
-# Check active agent instructions in current project
+# Check active agent instructions in current project (v4.0 — Four-Partner Swarm)
 # Usage: bash scripts/check-agent-instructions.sh
 
 set -e
 
 echo "════════════════════════════════════════════"
-echo "  Active Agent Instructions Checker"
+echo "  Active Agent Instructions Checker v4.0"
 echo "════════════════════════════════════════════"
 echo ""
 
@@ -18,8 +18,6 @@ echo "=== GLOBAL INSTRUCTIONS ==="
 if [ -f ~/.claude/CLAUDE.md ]; then
     echo "✓ ~/.claude/CLAUDE.md exists"
     echo "  Lines: $(wc -l < ~/.claude/CLAUDE.md)"
-    echo "  Key rules:"
-    grep -E "^### (Core rule|Project isolation|Collaboration behavior)" ~/.claude/CLAUDE.md | head -3
 else
     echo "✗ ~/.claude/CLAUDE.md NOT FOUND"
 fi
@@ -34,14 +32,46 @@ for file in "CLAUDE.md" "AGENTS.md" "docs/COLLAB.md" "COLLAB.md"; do
 done
 echo ""
 
-echo "=== QODER CONTEXT ==="
-if [ -f "$GIT_ROOT/.qoder/context.md" ]; then
-    echo "✓ .qoder/context.md exists"
-    echo "  Lines: $(wc -l < $GIT_ROOT/.qoder/context.md)"
-    echo "  Core rule:"
-    grep -A1 "^## Core rule" $GIT_ROOT/.qoder/context.md | tail -1
+echo "=== CANON ==="
+CANON_DIR="$GIT_ROOT/canon/modules"
+if [ -d "$CANON_DIR" ]; then
+    echo "✓ canon/modules/ exists"
+    for mod in CORE.md DEV.md DECISION.md; do
+        [ -f "$CANON_DIR/$mod" ] && echo "  ✓ $mod" || echo "  ✗ $mod MISSING"
+    done
 else
-    echo "✗ .qoder/context.md NOT FOUND"
+    echo "○ canon/modules/ not found (not a developer-core repo?)"
+fi
+echo ""
+
+echo "=== BANXE STACK v2.0 ==="
+
+# LiteLLM
+if curl -sf http://localhost:4000/v1/models > /dev/null 2>&1; then
+    echo "✓ LiteLLM :4000 — responding"
+else
+    echo "✗ LiteLLM :4000 — NOT responding"
+fi
+
+# Aider
+if which aider > /dev/null 2>&1; then
+    echo "✓ Aider CLI — found"
+else
+    echo "✗ Aider CLI — NOT FOUND"
+fi
+
+# Ruflo config
+if [ -f "$GIT_ROOT/ruflo/config.yaml" ]; then
+    echo "✓ ruflo/config.yaml — found"
+else
+    echo "○ ruflo/config.yaml not found"
+fi
+
+# MiroFish
+if curl -sf http://localhost:3000/api/health > /dev/null 2>&1; then
+    echo "✓ MiroFish :3000 — responding"
+else
+    echo "○ MiroFish :3000 — not deployed"
 fi
 echo ""
 
@@ -55,29 +85,7 @@ else
 fi
 echo ""
 
-echo "=== MCP CONFIG ==="
-if [ -f ~/.claude/settings.json ]; then
-    echo "✓ ~/.claude/settings.json exists"
-    if grep -q "qoder" ~/.claude/settings.json; then
-        echo "  Qoder MCP server: configured"
-    else
-        echo "  Qoder MCP server: NOT configured"
-    fi
-else
-    echo "✗ ~/.claude/settings.json NOT FOUND"
-fi
-echo ""
-
-echo "=== QODER CONFIG ==="
-if [ -f ~/.qoder/config.yml ]; then
-    echo "✓ ~/.qoder/config.yml exists"
-    echo "  Context paths:"
-    grep -A5 "contextPaths:" ~/.qoder/config.yml | tail -n+2 | head -5
-else
-    echo "○ ~/.qoder/config.yml not found"
-fi
-echo ""
-
 echo "════════════════════════════════════════════"
-echo "  Instruction hierarchy is COMPLETE"
+echo "  Instruction hierarchy: COMPLETE"
+echo "  Stack: BANXE AI Stack v2.0"
 echo "════════════════════════════════════════════"

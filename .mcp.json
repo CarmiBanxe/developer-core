@@ -1,9 +1,4 @@
 {
   "mcpServers": {
-    "qoder": {
-      "type": "stdio",
-      "command": "qodercli",
-      "args": ["mcp-server"]
-    }
   }
 }
