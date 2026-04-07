@@ -77,6 +77,12 @@ _FORBIDDEN_PATTERNS = [
 ]
 
 
+class ComplianceValidator:
+    """Compatibility shim — wraps module-level verify() as a callable class."""
+    def verify(self, statement: str, context: dict | None = None) -> VerificationResult:
+        return verify(statement, context)
+
+
 def verify(statement: str, context: dict | None = None) -> VerificationResult:
     """
     Check whether an agent statement is FCA/AML compliant.
