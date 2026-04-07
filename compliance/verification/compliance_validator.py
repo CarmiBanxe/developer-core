@@ -61,19 +61,37 @@ _AUDIT_TTL_YEARS = 5       # FCA MLR 2017 minimum
 
 # Red-line phrases that agents MUST NOT emit
 _FORBIDDEN_PATTERNS = [
-    r"bypass\s+kyc",
-    r"skip\s+kyc",
-    r"skip\s+(sanctions|screening|edd|aml|verification|check)",
+    # KYC/EDD bypass or skip
+    r"\bbypass\s+.{0,15}\b(kyc|edd|sanctions|screening|aml)\b",
+    r"\bskip\s+.{0,15}\b(kyc|sanctions|screening|edd|aml|verification|sar|suspicious)\b",
     r"no\s+need\s+to\s+report",
-    r"ignore\s+(risk|alert|flag)",
-    r"approve\s+without\s+(check|review|screening|kyc|verification)",
-    r"without\s+kyc",           # order-independent: "without KYC" anywhere = red line
-    r"without\s+verification",
+    r"\bignore\s+.{0,15}\b(risk|alert|flag|warning)\b",
+    # Affirmative approve-without (we/I/can directly before approve or close to it)
+    r"\b(?:i|we|you)\s+(?:will|can|should|could)\s+.{0,40}\bapprove\b.{0,40}\bwithout\s+(?:edd|kyc|mlro|enhanced|verification|sanctions)\b",
+    r"\bwe\s+can\s+approve\b.{0,40}\bwithout\b",
+    r"without\s+kyc\b",
+    r"without\s+verification\b",
+    # MLRO / EDD bypass — direct phrasing (not negated context)
+    r"\bwithout\s+mlro\b",                  # "without MLRO" anywhere
+    r"\bwithout\s+edd\b",
+    r"\bwithout\s+enhanced\s+due\s+diligence\b",
     r"transfer\s+without\s+(monitoring|reporting)",
-    r"structure\s+.*payment",  # structuring = criminal
+    r"structure\s+.*payment",
     r"split\s+.*avoid\s+(report|threshold|limit)",
-    r"verify\s+later",          # deferred KYC = forbidden
-    r"exception\s+for\s+(vip|client|customer)",
+    # "verify...later" (deferred KYC)
+    r"\bverify\s+.{0,25}\blater\b",
+    # Exception for VIP/client (flexible)
+    r"\bexception\s+.{0,20}\b(vip|client|customer)\b",
+    # Tipping-off offence (POCA 2002 s.333A) — two directions
+    r"\b(inform|tell|notify|warn)\s+.{0,30}\b(customer|client|them)\b.{0,80}\b(sar|investigation|nca)\b",
+    r"\bsar\b.{0,80}\b(inform|tell|notify|warn)\s+.{0,30}\b(customer|client|them)\b",
+    r"tip\s*-?\s*off",
+    # Audit trail tampering
+    r"\bdelete\s+.{0,25}\b(audit|record|entry|evidence|log)\b",
+    r"\b(replace|overwrite|remove)\s+.{0,20}\b(audit|record|entry|evidence)\b",
+    # Threshold change without authorisation (raised/lowered/adjusted, long distance to "without")
+    r"\b(lower|raise|raised|lowered|change|adjust|set)\s+.{0,30}\bthreshold\b.{0,80}\bwithout\b",
+    r"\bthreshold\b.{0,80}\bwithout\s+.{0,20}\b(mlro|approval|authoris)\b",
 ]
 
 
@@ -135,12 +153,21 @@ def verify(statement: str, context: dict | None = None) -> VerificationResult:
         )
 
     # --- SAR auto-filing check ---
-    if "sar" in text or "suspicious activity" in text:
+    # Only flag when statement describes actively filing/submitting SAR, not when
+    # SAR is merely mentioned in a regulatory or record-keeping context.
+    _SAR_ACTION = any(re.search(p, text) for p in [
+        r"\bfile\s+.{0,20}\bsar\b",
+        r"\bsubmit\s+.{0,20}\bsar\b",
+        r"\bsar\b.{0,20}\bfile\b",
+        r"\bsar\b.{0,20}\bsubmit\b",
+        r"\bfile\s+(?:the\s+)?suspicious\b",
+    ])
+    if _SAR_ACTION:
         if "human review" not in text and "hitl" not in text and "mlro" not in text:
             return VerificationResult(
                 verdict=Verdict.UNCERTAIN,
                 rule="FCA MLR 2017 §19 / NCA reporting",
-                reason="SAR mentioned but human review (HITL/MLRO) not referenced",
+                reason="SAR filing action described but human review (HITL/MLRO) not referenced",
                 confidence=0.65,
             )
 
