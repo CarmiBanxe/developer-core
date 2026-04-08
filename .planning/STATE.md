@@ -9,7 +9,7 @@
 | Task | Agent | Status | IL | Notes |
 |------|-------|--------|----|-------|
 | Safeguarding Deploy | devops-engineer | DONE ✅ | IL-043 | Deployed 2026-04-08, timer active |
-| FastAPI REST API Layer | backend-engineer | PENDING | IL-046 | Unblocked |
+| FastAPI REST API Layer | backend-engineer | DONE ✅ | IL-046 | 80 tests, commit 537f6a4 |
 | Notification Service S17-03 | backend-engineer | PENDING | IL-047 | Unblocked |
 | Redis VelocityTracker | backend-engineer | PENDING | TBD | Unblocked |
 | Fraud + AML Pipeline S9-05 | backend-engineer | PENDING | TBD | Depends on Redis |
