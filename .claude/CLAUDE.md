@@ -30,6 +30,16 @@ All methodology files live in `~/developer/`. Nothing here goes into `banxe-emi-
 | compliance-specialist.md | `.claude/agents/compliance-specialist.md` | FCA compliance reviewer |
 | qa-reviewer.md | `.claude/agents/qa-reviewer.md` | Test quality + gate runner |
 | devops-engineer.md | `.claude/agents/devops-engineer.md` | GMKtec infra specialist |
+| gsd-new-project.md | `.claude/commands/gsd-new-project.md` | Start new sprint from SPEC |
+| gsd-plan-phase.md | `.claude/commands/gsd-plan-phase.md` | Plan next phase from ROADMAP |
+| gsd-execute-plan.md | `.claude/commands/gsd-execute-plan.md` | Execute current PROJECT.md |
+| gsd-quick.md | `.claude/commands/gsd-quick.md` | Single atomic task, no planning |
+| gsd-health.md | `.claude/commands/gsd-health.md` | Full system health check |
+| gsd-help.md | `.claude/commands/gsd-help.md` | GSD commands reference |
+| PROJECT.md | `.planning/PROJECT.md` | Current sprint — tasks + agents |
+| STATE.md | `.planning/STATE.md` | Task status (DONE/IN_PROGRESS/BLOCKED) |
+| REQUIREMENTS.md | `.planning/REQUIREMENTS.md` | Technical constraints |
+| ROADMAP.md | `.planning/roadmap/ROADMAP.md` | Long-term phases plan |
 
 ### Spec-First Passport (banxe-architecture)
 
@@ -63,9 +73,9 @@ No steps may be skipped. quality-gate.sh is always the final blocker.
          Если файл описывает ПОЧЕМУ ТАК РЕШИЛИ → `banxe-architecture/`
 
 **Must NOT appear in banxe-emi-stack/.claude/:**
-- rules/quality.md, rules/compliance.md, rules/testing.md
-- skills/implement-feature.md, skills/create-migration.md, skills/deploy-gmktec.md
-- agents/database-architect.md, etc.
+- `.claude/rules/quality.md`, `.claude/rules/compliance.md`, `.claude/rules/testing.md`
+- `.claude/skills/implement-feature.md`, `.claude/skills/create-migration.md`, `.claude/skills/deploy-gmktec.md`
+- `.claude/agents/database-architect.md`, `.claude/agents/backend-engineer.md`, `.claude/agents/qa-reviewer.md`
 
 ---
 
@@ -78,8 +88,6 @@ python3 ~/developer/spec-first/audit/spec_first_auditor.py 3      # specific blo
 ```
 
 Exit 0 = PASS. Exit 1 = FAIL — do not proceed to next block.
-
----
 
 ---
 
