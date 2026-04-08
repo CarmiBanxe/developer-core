@@ -45,8 +45,8 @@
 
 | # | Feature | FCA Rule | Notes |
 |---|---------|---------|-------|
-| 12 | FIN060 Report | CASS 15.12.4R | Monthly safeguarding return |
-| 13 | SAR Auto-Filing | POCA 2002 s.330 | With MLRO approval gate |
+| 12 | FIN060 Report | CASS 15.12.4R | DONE ✅ — API router + RegData stub |
+| 13 | SAR Auto-Filing | POCA 2002 s.330 | DONE ✅ — MLRO gate, NCA stub, 37 tests |
 | 14 | n8n Shortfall Alert Workflow | CASS 7.15.29R | Manual import pending |
 
 ---

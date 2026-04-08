@@ -23,7 +23,7 @@
 - IL-043: Safeguarding DEPLOYED on GMKtec — DONE ✅ (2026-04-08, systemd timer active, 13/13 tests)
 
 ## Last Quality Gate
-- Tests: 714/714 passed (2026-04-08)
+- Tests: 751/751 passed (2026-04-08) — IL-052 added 37 tests
 - Coverage: ≥80% new files
 - Semgrep: 0 violations
 
