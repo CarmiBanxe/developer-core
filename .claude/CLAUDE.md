@@ -135,3 +135,203 @@ GSD оркестрирует разработку через 3 мета-аген
 | Skills orchestration | `~/banxe-architecture/docs/SKILLS-ORCHESTRATION.md` |
 | Invariants | `~/banxe-architecture/INVARIANTS.md` |
 | Quality gate | `~/banxe-emi-stack/scripts/quality-gate.sh` |
+
+---
+
+## ДОПОЛНЕНИЕ: Авто-настройка + Контролёр + Obsidian Vault (GSD v3)
+
+> Добавлено: 2026-04-08. Не удалять предыдущие блоки — они остаются в силе.
+
+---
+
+## Правила авто-одобрения (ОБЯЗАТЕЛЬНОЕ ИСПОЛНЕНИЕ)
+
+### Автоматически одобрено (выполнять БЕЗ запроса CEO):
+- `git add / commit / push` — ДА
+- `pytest / ruff / semgrep` — ДА
+- `rsync` к серверам (GMKtec, NucBox) — ДА
+- Создание файлов и директорий — ДА
+- Редактирование файлов — ДА
+- Запуск Docker-контейнеров — ДА
+- Создание/обновление заметок в Obsidian vault — ДА
+- `python3 ~/developer/spec-first/audit/spec_first_auditor.py` — ДА
+- `bash scripts/quality-gate.sh` — ДА
+
+### Требует подтверждения CEO:
+- Удаление файлов — СПРОСИТЬ
+- Удаление репозиториев — СПРОСИТЬ
+- Изменение прав доступа — СПРОСИТЬ
+- Финансовые операции — СПРОСИТЬ
+- Публикация в Product Plane (banxe-emi-stack) — СПРОСИТЬ
+
+### Правило продолжения:
+Разработчик ОБЯЗАН продолжать работу без остановки на вопросы,
+КРОМЕ случаев из списка "Требует подтверждения".
+
+---
+
+## Агент-Контролёр исполнения (Supervisor Agent)
+
+### Роль: Гарантировать выполнение ВСЕХ фаз GSD + Spec-First
+
+### Алгоритм при старте КАЖДОЙ сессии:
+1. Прочитать .planning/STATE.md
+2. Прочитать banxe-architecture/INSTRUCTION-LEDGER.md
+3. Прочитать obsidian-vault/sessions/ (последняя сессия)
+4. Найти задачи != DONE
+5. Отсортировать: P0 > P1 > P2
+6. Определить текущую фазу
+7. Предложить CEO: "Продолжаем [IL-XXX]? Фаза: [N]. План: [действия]"
+8. При "да" / "продолжай" — выполнять без дополнительных вопросов
+9. При завершении — перейти к следующей задаче по приоритету
+
+### Самовозврат к работе:
+При прерывании сессии или команде "продолжай":
+- АВТОМАТИЧЕСКИ определяет точку остановки из STATE.md + sessions/
+- Предлагает продолжение с конкретным планом действий
+- НЕ ЖДЁТ повторного объяснения контекста от CEO
+- Контекст берёт из данных (vault, STATE.md, IL), а не из чата
+
+### Чек-лист закрытия задачи (ВСЕ 9 пунктов обязательны):
+- [ ] IL-запись обновлена (статус = DONE)
+- [ ] Тесты пройдены (pytest, coverage 80%+)
+- [ ] Линтинг чист (ruff 0 errors)
+- [ ] Security check (semgrep 0 critical)
+- [ ] spec-first-auditor PASS (Exit 0)
+- [ ] quality-gate.sh PASS
+- [ ] Код закоммичен и запушен
+- [ ] .planning/STATE.md обновлён
+- [ ] Vault обновлён (knowledge/ + sessions/)
+
+Если хоть ОДИН пункт не выполнен — задача НЕ закрыта.
+Контролёр возвращает к незавершённому пункту. СТОП, выполнить, проверить 9/9, только потом дальше.
+
+---
+
+## Obsidian Knowledge Vault Protocol
+
+### Расположение: ~/obsidian-vault/
+
+Структура:
+- 00-home/index.md — точка входа
+- atlas/ — карты и индексы
+- knowledge/integrations/ — API, внешние сервисы
+- knowledge/decisions/ — архитектурные решения (ADR)
+- knowledge/debugging/ — решённые баги и workarounds
+- knowledge/patterns/ — повторяющиеся паттерны
+- knowledge/business/ — бизнес-логика, регуляции
+- sessions/ — логи сессий Claude Code
+- inbox/ — необработанные заметки
+
+### Когда записывать:
+- Закрыл IL-задачу — sessions/YYYY-MM-DD.md (лог: что сделано, решения)
+- Нашёл баг + решение — knowledge/debugging/ (проблема, причина, решение)
+- Архитектурное решение — knowledge/decisions/ (ADR: контекст, варианты, решение)
+- Обнаружил паттерн — knowledge/patterns/ (паттерн + примеры)
+- Интеграция с API — knowledge/integrations/ (endpoint, auth, rate limits)
+- Бизнес-правило — knowledge/business/ (правило + регуляция + ссылка)
+
+### Формат заметки (frontmatter обязателен):
+tags: [тема, технология], date: YYYY-MM-DD, related: [[связанная-заметка]], il: IL-XXX
+
+### Правило 30-50 заметок:
+При накоплении 30-50 заметок в директории — обновить index.md, создать atlas-карту.
+
+---
+
+## Memory Protocol
+
+### Связь Memory / Vault / STATE:
+- Memory (.claude/memory) = краткосрочный контекст сессии
+- Vault (obsidian-vault) = долгосрочные знания
+- STATE.md = оперативный статус задач
+- При противоречии — vault имеет приоритет над memory
+
+### Приоритет источников контекста:
+1. .planning/STATE.md
+2. INSTRUCTION-LEDGER.md
+3. obsidian-vault/sessions/
+4. obsidian-vault/knowledge/
+5. .planning/PROJECT.md
+6. .planning/REQUIREMENTS.md
+7. COMPLIANCE-MATRIX.md
+8. .claude/memory
+
+---
+
+## Инфраструктура серверов
+
+### GMKtec Mini-PC:
+- Keycloak: порт 8180, Docker services активны
+- Деплой: rsync с Legion
+
+### NucBox:
+- Резервный сервер + бэкапы
+
+### Legion (основная рабочая станция):
+- WSL2/Ubuntu, все репозитории, Claude Code, SSH-ключи
+- Obsidian vault: ~/obsidian-vault
+
+### Сетевая схема:
+Legion (WSL2) --rsync--> GMKtec (Docker)
+Legion (WSL2) --rsync--> NucBox (backup)
+Legion (WSL2) --git----> GitHub (CarmiBanxe/*)
+
+---
+
+## UI/UX Pipeline (banxe-ui)
+
+Plane: Developer (НЕ production).
+Промоушен в Product Plane: ТОЛЬКО после CEO review + IL entry.
+
+Pipeline: bash scripts/banxe-build.sh (полный 8 стадий)
+--from-stage 4 (с 4-й стадии), --stage quality-gate (только gate)
+
+Документация в banxe-architecture/docs/:
+- BANXE-UI-UX-RESEARCH.md, BANXE-UI-UX-SYSTEM.md
+- BANXE-SCREEN-INVENTORY.md, BANXE-UI-ARCHITECTURE.md
+- BANXE-CLAUDE-CODE-WORKFLOW.md, BANXE-HEADLESS-PIPELINE.md
+- UI-PLANE-OPERATING-MODEL.md
+
+---
+
+## GSD Status Report (формат отчёта)
+
+При запросе статуса или в конце сессии выводить:
+- Завершено: IL-XXX..IL-XXX (N задач)
+- В работе: IL-XXX — описание
+- Очередь: IL-XXX, IL-XXX
+- Тесты: N passed, 0 failed, Coverage: XX%
+- Auditor: X/X PASS, Quality Gate: PASS/FAIL
+- Деплой: статус GMKtec
+- Vault: +N заметок
+- Следующее действие: автоматически определено
+
+---
+
+## Execution Plan (дедлайн 7 мая 2026)
+
+1. Safeguarding Deploy GMKtec | IL-043 | PENDING CEO RUN | P0
+2. FastAPI REST API Layer | IL-046 | PENDING | P1
+3. Notification Service S17-03 | IL-047 | PENDING | P1
+4. Redis VelocityTracker | TBD | PENDING | P2
+5. Fraud + AML Pipeline S9-05 | TBD | PENDING | P2
+6. Consumer Duty S9-06 FCA PS22/9 | TBD | PENDING | P2
+
+---
+
+## Обязательность исполнения (ПРИКАЗ)
+
+1. Контролёр запускается АВТОМАТИЧЕСКИ при каждом старте сессии
+2. Все фазы GSD + Spec-First обязательны — пропуск = нарушение
+3. Vault обновляется КАЖДУЮ сессию — без исключений
+4. Территории соблюдаются ВСЕГДА:
+   - ~/developer/.claude/ = настройки разработчика
+   - ~/banxe-emi-stack/ = production код
+   - ~/banxe-architecture/ = архитектура и решения
+   - ~/banxe-ui/ = UI прототипы (Developer Plane)
+   - ~/obsidian-vault/ = база знаний
+5. spec-first-auditor Exit 0 + quality-gate.sh PASS = обязательны перед закрытием
+6. Hexagonal pattern: Port -> Service -> MockAdapter — обязательный порядок
+7. При "продолжай" — контролёр восстанавливает контекст из данных, не из чата
+8. audit_log.jsonl — append-only, не редактировать вручную
