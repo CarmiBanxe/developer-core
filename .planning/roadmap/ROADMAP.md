@@ -37,7 +37,7 @@
 | 8 | Companies House KYB | BT-002: API key | Corporate KYC verification |
 | 9 | OpenCorporates | BT-003: API key | Company ownership data |
 | 10 | Sardine.ai Fraud Scoring | BT-004: API key | Contact sales@sardine.ai |
-| 11 | HITL Feedback Loop | - | AI learns from CTIO Oleg's actions |
+| 11 | HITL Feedback Loop | IL-051 | DONE ✅ — 34 tests, commit 64a70d8 |
 
 ---
 
