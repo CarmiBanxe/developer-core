@@ -8,7 +8,7 @@
 
 | Task | Agent | Status | IL | Notes |
 |------|-------|--------|----|-------|
-| Safeguarding Deploy | devops-engineer | PENDING CEO RUN | IL-043 | Scripts ready, QRAA required |
+| Safeguarding Deploy | devops-engineer | DONE ✅ | IL-043 | Deployed 2026-04-08, timer active |
 | FastAPI REST API Layer | backend-engineer | PENDING | IL-046 | Unblocked |
 | Notification Service S17-03 | backend-engineer | PENDING | IL-047 | Unblocked |
 | Redis VelocityTracker | backend-engineer | PENDING | TBD | Unblocked |
@@ -20,7 +20,7 @@
 ## Completed (this sprint)
 - IL-045: Spec-First + GSD infrastructure — DONE (2026-04-08)
 - IL-044: Skills Orchestration — DONE (2026-04-08)
-- IL-043: Safeguarding artifacts created — IN_PROGRESS (awaiting GMKtec deploy)
+- IL-043: Safeguarding DEPLOYED on GMKtec — DONE ✅ (2026-04-08, systemd timer active, 13/13 tests)
 
 ## Last Quality Gate
 - Tests: 480/480 passed (2026-04-08)
@@ -37,4 +37,4 @@
 ### 2026-04-08
 - IL-045 GSD + Spec-First infrastructure completed (Blocks 0-7 PASS)
 - IL-044 Skills Orchestration: SKILLS-ORCHESTRATION.md + 5 agent passports updated
-- IL-043 Safeguarding: deploy script created, awaiting CEO GMKtec run
+- IL-043 Safeguarding: DEPLOYED on GMKtec — systemd timer active, 13/13 tests PASS
