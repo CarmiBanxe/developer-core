@@ -10,7 +10,7 @@
 |------|-------|--------|----|-------|
 | Safeguarding Deploy | devops-engineer | DONE ✅ | IL-043 | Deployed 2026-04-08, timer active |
 | FastAPI REST API Layer | backend-engineer | DONE ✅ | IL-046 | 80 tests, commit 537f6a4 |
-| Notification Service S17-03 | backend-engineer | PENDING | IL-047 | Unblocked |
+| Notification Service S17-03 | backend-engineer | DONE ✅ | IL-047 | 38 tests, commit 4793303 |
 | Redis VelocityTracker | backend-engineer | PENDING | TBD | Unblocked |
 | Fraud + AML Pipeline S9-05 | backend-engineer | PENDING | TBD | Depends on Redis |
 | Consumer Duty S9-06 | backend-engineer | PENDING | TBD | Unblocked |
@@ -23,7 +23,7 @@
 - IL-043: Safeguarding DEPLOYED on GMKtec — DONE ✅ (2026-04-08, systemd timer active, 13/13 tests)
 
 ## Last Quality Gate
-- Tests: 480/480 passed (2026-04-08)
+- Tests: 598/598 passed (2026-04-08)
 - Coverage: ≥80% new files
 - Semgrep: 0 violations
 
