@@ -6,8 +6,16 @@ and generates concrete diffs that can be applied to improve the agents.
 
 Usage:
     python3 compliance/training/feedback_loop.py --report     # show what would be patched
-    python3 compliance/training/feedback_loop.py --apply      # apply all patches
+    python3 compliance/training/feedback_loop.py --apply      # apply all patches (CLASS_A only)
     python3 compliance/training/feedback_loop.py --apply --source compliance_validator  # apply one source
+    python3 compliance/training/feedback_loop.py --apply \\
+        --approver mark-001 --approver-role DEVELOPER \\
+        --reason "quarterly SOUL update from corpus"   # also apply CLASS_B (SOUL.md)
+
+G-05 Governance Gate:
+    SOUL.md and other CLASS_B files require --approver + --approver-role + --reason.
+    Without these flags, soul_patches are skipped (not blocked — just bypassed).
+    Pass --strict to abort with error instead of skipping when approver missing.
 
 Called by: scripts/train-agent.sh --feedback / --deploy
 """
@@ -28,6 +36,21 @@ from pathlib import Path
 # Paths (can be overridden via env)
 # ─────────────────────────────────────────────
 DEVELOPER_DIR = Path(os.environ.get("DEVELOPER_DIR", Path.home() / "developer"))
+
+# ── G-05: Governance gate import (optional — degrades gracefully if missing) ──
+_GOVERNANCE_AVAILABLE = False
+try:
+    _VIBE_SRC = Path(os.environ.get("VIBE_DIR", Path.home() / "vibe-coding")) / "src"
+    if str(_VIBE_SRC) not in sys.path:
+        sys.path.insert(0, str(_VIBE_SRC))
+    from compliance.governance.soul_governance import (  # type: ignore[import]
+        ChangeRequest,
+        GovernanceError,
+        GovernanceGate,
+    )
+    _GOVERNANCE_AVAILABLE = True
+except ImportError:
+    pass
 CORPUS_DIR    = DEVELOPER_DIR / "compliance" / "training" / "corpus"
 VIBE_DIR      = Path(os.environ.get("VIBE_DIR", Path.home() / "vibe-coding"))
 SOUL_MD       = VIBE_DIR / "docs" / "SOUL.md"
@@ -515,13 +538,77 @@ def commit_vibe_changes(soul_applied: int, agents_applied: int) -> None:
 # Entry point
 # ─────────────────────────────────────────────
 
+def _governance_check_soul(
+    approver_id:   str | None,
+    approver_role: str | None,
+    reason:        str,
+    soul_patches:  list[dict],
+    strict:        bool = False,
+) -> bool:
+    """
+    G-05: Run governance gate before applying SOUL.md patches.
+
+    Returns True if patches should be applied, False if they should be skipped.
+    Raises SystemExit(1) in --strict mode when gate blocks.
+
+    Without governance module (fallback): always returns True (legacy behaviour).
+    """
+    if not soul_patches:
+        return True
+
+    if not _GOVERNANCE_AVAILABLE:
+        print("  [G-05] Governance module not available — SOUL.md patches applied without gate")
+        return True
+
+    # Build diff summary for audit log
+    diff_lines = [p.get("soul_line", "")[:80] for p in soul_patches[:5]]
+    diff_summary = "; ".join(diff_lines)
+
+    gate = GovernanceGate()
+    req  = ChangeRequest(
+        target_file   = "docs/SOUL.md",
+        change_type   = "soul_update",
+        proposed_by   = "feedback_loop",
+        content_diff  = diff_summary,
+        approver_id   = approver_id,
+        approver_role = approver_role,
+        reason        = reason,
+    )
+
+    try:
+        decision = gate.evaluate(req)
+        print(
+            f"  [G-05] SOUL.md governance APPROVED "
+            f"[CLASS_{decision.change_class}] "
+            f"approver={decision.approver_id} role={decision.approver_role}"
+        )
+        return True
+    except GovernanceError as e:
+        if strict:
+            print(f"\n[G-05] SOUL.md governance BLOCKED:\n  {e}", file=sys.stderr)
+            sys.exit(1)
+        print(
+            f"  [G-05] SOUL.md governance gate: no approver provided — "
+            f"skipping {len(soul_patches)} soul_patch(es).\n"
+            f"  To apply SOUL.md changes, pass: "
+            f"--approver <id> --approver-role DEVELOPER|CTIO|CEO --reason '<text>'"
+        )
+        return False
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="BANXE Feedback Loop — corpus → patches")
-    parser.add_argument("--report",    action="store_true", help="Show what would be patched (no changes)")
-    parser.add_argument("--apply",     action="store_true", help="Apply all patches")
-    parser.add_argument("--source",    default=None,        help="Filter by source: compliance_validator, policy_agent, workflow_agent")
-    parser.add_argument("--since",     default=None,        help="Only process corpus from this date YYYY-MM-DD")
-    parser.add_argument("--json",      action="store_true", help="Output JSON report")
+    parser.add_argument("--report",       action="store_true", help="Show what would be patched (no changes)")
+    parser.add_argument("--apply",        action="store_true", help="Apply all patches")
+    parser.add_argument("--source",       default=None,        help="Filter by source: compliance_validator, policy_agent, workflow_agent")
+    parser.add_argument("--since",        default=None,        help="Only process corpus from this date YYYY-MM-DD")
+    parser.add_argument("--json",         action="store_true", help="Output JSON report")
+    # G-05 governance gate arguments
+    parser.add_argument("--approver",       default=None, help="[G-05] Approver ID for CLASS_B changes (SOUL.md)")
+    parser.add_argument("--approver-role",  default=None, help="[G-05] Approver role: DEVELOPER | CTIO | CEO")
+    parser.add_argument("--reason",         default="",   help="[G-05] Reason for CLASS_B change")
+    parser.add_argument("--strict",         action="store_true",
+                        help="[G-05] Abort with error if governance gate blocks (default: skip)")
     args = parser.parse_args()
 
     if not args.report and not args.apply:
@@ -550,9 +637,19 @@ def main() -> None:
 
     if args.apply:
         print("Applying patches...\n")
-        cv_applied   = apply_forbidden_patches(report["forbidden_patches"])
-        soul_applied = apply_soul_patches(report["soul_patches"])
+        cv_applied     = apply_forbidden_patches(report["forbidden_patches"])
         agents_applied = apply_agents_patches(report["agents_patches"])
+
+        # ── G-05: Governance gate for SOUL.md (CLASS_B) ──────────────────────
+        soul_allowed = _governance_check_soul(
+            approver_id   = args.approver,
+            approver_role = getattr(args, "approver_role", None),
+            reason        = args.reason,
+            soul_patches  = report["soul_patches"],
+            strict        = args.strict,
+        )
+        soul_applied = apply_soul_patches(report["soul_patches"]) if soul_allowed else 0
+
         total_applied = cv_applied + soul_applied + agents_applied
         commit_developer_changes(cv_applied)
         commit_vibe_changes(soul_applied, agents_applied)
