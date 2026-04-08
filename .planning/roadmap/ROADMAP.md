@@ -16,25 +16,28 @@
 
 ## Phase 1: Core API + Services (P0 — deadline 7 May 2026)
 
-| # | Feature | IL | Status | Priority |
-|---|---------|-----|--------|----------|
-| 1 | Safeguarding Deploy (GMKtec) | IL-043 | IN_PROGRESS | P0 |
-| 2 | FastAPI REST API Layer | IL-046 | PENDING | P0 |
-| 3 | Notification Service S17-03 | IL-047 | PENDING | P0 |
-| 4 | Redis VelocityTracker | TBD | PENDING | P0 |
-| 5 | Fraud + AML Pipeline S9-05 | TBD | PENDING | P0 |
-| 6 | Consumer Duty S9-06 FCA PS22/9 | TBD | PENDING | P0 |
+| # | Feature | IL | Status | Tests |
+|---|---------|-----|--------|-------|
+| 1 | Safeguarding Deploy (GMKtec) | IL-043 | DONE ✅ | 13/13 |
+| 2 | FastAPI REST API Layer | IL-046 | DONE ✅ | 80/80 |
+| 3 | Notification Service S17-03 | IL-047 | DONE ✅ | 38/38 |
+| 4 | Redis VelocityTracker | IL-048 | DONE ✅ | 22/22 |
+| 5 | Fraud + AML Pipeline S9-05 | IL-049 | DONE ✅ | 27/27 |
+| 6 | Consumer Duty S9-06 FCA PS22/9 | IL-050 | DONE ✅ | 33/33 |
+
+**Phase 1 COMPLETE ✅ — 680/680 tests PASS (2026-04-08)**
 
 ---
 
-## Phase 2: Integrations (P1 — pending Modulr API key)
+## Phase 2: Integrations (P1 — pending API keys)
 
 | # | Feature | Blocker | Notes |
 |---|---------|---------|-------|
 | 7 | Modulr Payment Rails | BT-001: API key | Register at modulrfinance.com/developer |
 | 8 | Companies House KYB | BT-002: API key | Corporate KYC verification |
 | 9 | OpenCorporates | BT-003: API key | Company ownership data |
-| 10 | HITL Feedback Loop | - | AI learns from CTIO Oleg's actions |
+| 10 | Sardine.ai Fraud Scoring | BT-004: API key | Contact sales@sardine.ai |
+| 11 | HITL Feedback Loop | - | AI learns from CTIO Oleg's actions |
 
 ---
 
@@ -42,19 +45,18 @@
 
 | # | Feature | FCA Rule | Notes |
 |---|---------|---------|-------|
-| 11 | FIN060 Report | CASS 15.12.4R | Monthly safeguarding return |
-| 12 | SAR Auto-Filing | POCA 2002 s.330 | With MLRO approval gate |
-| 13 | Consumer Duty Annual Report | PS22/9 | 4 outcomes assessment |
+| 12 | FIN060 Report | CASS 15.12.4R | Monthly safeguarding return |
+| 13 | SAR Auto-Filing | POCA 2002 s.330 | With MLRO approval gate |
+| 14 | n8n Shortfall Alert Workflow | CASS 7.15.29R | Manual import pending |
 
 ---
 
 ## Key Milestones
 
-| Date | Milestone |
-|------|-----------|
-| 2026-04-15 | FastAPI Layer live on GMKtec |
-| 2026-04-22 | Notification + Redis complete |
-| 2026-04-30 | Fraud + AML wired end-to-end |
-| 2026-05-07 | **P0 COMPLETE** — Consumer Duty |
-| TBD | Modulr sandbox integration |
-| TBD | FIN060 first submission |
+| Date | Milestone | Status |
+|------|-----------|--------|
+| 2026-04-08 | **Phase 1 COMPLETE** — 680 tests, all 6 IL done | ✅ DONE |
+| TBD | Modulr sandbox integration | ⏳ Awaiting API key |
+| TBD | Sardine.ai fraud scoring (live) | ⏳ Awaiting API key |
+| TBD | FIN060 first submission | ⏳ Phase 3 |
+| 2026-05-07 | **P0 deadline** | 🟢 On track |
