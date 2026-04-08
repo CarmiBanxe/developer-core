@@ -165,3 +165,9 @@
 | Skills | 10 skills × 3 planes | SKILLS-MATRIX.md |
 | Orchestration model | 10 сценариев A–J | SKILLS-ORCHESTRATION.md |
 | Memory | Claude Code auto-memory | ~/.claude/projects/*/memory/ |
+
+## Stack
+<!-- See Section 5: Стек технологий above -->
+
+## Metrics
+<!-- See Section 9: Success Metrics / OKRs above -->

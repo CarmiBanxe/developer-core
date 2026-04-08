@@ -35,3 +35,6 @@ Skill: create-migration (~/developer/.claude/skills/create-migration.md)
 
 ## Выход
 SQL файл в `scripts/schema/{db}_{table}.sql`, проверенный на идемпотентность.
+
+<!-- ## Role -->
+<!-- ## Rules -->

@@ -60,3 +60,6 @@ semgrep --config ~/banxe-emi-stack/.semgrep/banxe-rules.yml ~/banxe-emi-stack/se
 
 ## Запуск
 Вызывается командой `/gsd-health` или автоматически в конце `/gsd-execute-plan`.
+
+<!-- ## Role -->
+<!-- ## Rules -->

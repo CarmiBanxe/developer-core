@@ -130,3 +130,5 @@ python3 ~/developer/spec-first/audit/spec_first_auditor.py
 - [ ] quality-gate.sh PASS
 - [ ] IL запись обновлена
 - [ ] Pushed to GitHub
+
+<!-- ## Steps -->

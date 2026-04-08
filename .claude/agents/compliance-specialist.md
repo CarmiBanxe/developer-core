@@ -37,3 +37,6 @@ plane: DEVELOPER
 
 ## Выход
 Compliance verdict: PASS / FAIL с перечнем violations и FCA rule references.
+
+<!-- ## Role -->
+<!-- ## Rules -->

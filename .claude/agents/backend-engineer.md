@@ -36,3 +36,6 @@ Skill: implement-feature (~/developer/.claude/skills/implement-feature.md)
 
 ## Выход
 Port + Service + MockAdapter + tests, прошедшие `quality-gate.sh`.
+
+<!-- ## Role -->
+<!-- ## Rules -->

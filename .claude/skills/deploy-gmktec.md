@@ -91,3 +91,5 @@ ssh gmktec "cd /data/banxe/banxe-emi-stack && git reset --hard {COMMIT_HASH}"
 - [ ] Systemd timer (если применимо) active
 - [ ] Logs чистые (`ssh gmktec "journalctl -u banxe-* -n 20"`)
 - [ ] IL запись обновлена с proof (SSH output)
+
+<!-- ## Steps -->

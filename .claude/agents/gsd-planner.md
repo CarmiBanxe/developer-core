@@ -47,3 +47,6 @@ plane: DEVELOPER
 
 ## Запуск
 Вызывается автоматически командой `/gsd-new-project` или `/gsd-plan-phase`.
+
+<!-- ## Role -->
+<!-- ## Rules -->

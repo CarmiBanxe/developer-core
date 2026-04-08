@@ -53,3 +53,6 @@ plane: DEVELOPER
 
 ## Запуск
 Вызывается командой `/gsd-execute-plan`.
+
+<!-- ## Role -->
+<!-- ## Rules -->

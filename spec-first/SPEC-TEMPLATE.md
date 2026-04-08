@@ -337,3 +337,9 @@ CREATE TABLE IF NOT EXISTS config_overrides (
 Before any implementation: run `context_memory_sync` + check this spec.
 Before any API change: run `api_contract_guardian`.
 Before any commit: `bash scripts/quality-gate.sh PASS`.
+
+## User Stories
+<!-- See Section A above -->
+
+## DB Schema
+<!-- See Section B: DB Schema above -->

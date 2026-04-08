@@ -52,3 +52,6 @@ Skill: deploy-gmktec (~/developer/.claude/skills/deploy-gmktec.md)
 
 ## Выход
 Deployment proof: SSH output, test results, service status. Всё записывается в IL proof.
+
+<!-- ## Role -->
+<!-- ## Rules -->

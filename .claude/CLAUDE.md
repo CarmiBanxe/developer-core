@@ -474,3 +474,7 @@ bash scripts/banxe-build.sh --stage quality-gate  # Только quality gate
 | 12 | UI/UX Pipeline | banxe-ui + 8-стадийный pipeline + docs | ✅ |
 | 13 | Execution Plan | 6 задач до 7 мая 2026 | ✅ |
 | 14 | Структура файлов | Полное дерево всех файлов | ✅ |
+
+<!-- EXECUTION ORDER: See БЛОК 0 above -->
+<!-- Territory Rules: See БЛОК 0 above -->
+<!-- GSD Framework: See БЛОК 1 above -->

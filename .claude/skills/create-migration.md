@@ -87,3 +87,5 @@ ssh gmktec "cd /data/banxe/banxe-emi-stack && \
 - НИКОГДА `REAL` или `FLOAT` в PostgreSQL для денег (I-05)
 - НИКОГДА `ALTER TABLE ... DROP COLUMN` на audit таблицах (I-24)
 - НИКОГДА уменьшать TTL (I-08)
+
+<!-- ## Steps -->

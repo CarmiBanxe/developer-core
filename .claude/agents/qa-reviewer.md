@@ -51,3 +51,6 @@ ruff check services/ tests/
 
 ## Выход
 Quality report: PASS/FAIL, coverage %, список violations с file:line.
+
+<!-- ## Role -->
+<!-- ## Rules -->
