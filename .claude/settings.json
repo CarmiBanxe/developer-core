@@ -21,6 +21,26 @@
             "command": "python3 .claude-supervisor/hooks/pre_tool_use.py"
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $HOME/developer/.claude/hooks/inject-design-rules.py"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'f=$(echo $HOOK_TOOL_INPUT | python3 -c \"import sys,json; d=json.load(sys.stdin); print(d.get(\\\"file_path\\\",\\\"\\\"))\" 2>/dev/null); [[ $f == *banxe-ui* && $f == *.tsx ]] && echo \"✅ UI file saved: $f\" || true'"
+          }
+        ]
       }
     ],
     "Stop": [
