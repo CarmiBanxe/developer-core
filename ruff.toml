@@ -1,0 +1,10 @@
+[lint]
+select = ["E", "F", "W"]
+ignore = [
+    "E501",   # line too long
+    "E741",   # ambiguous variable name (existing code)
+    "F841",   # local variable assigned but never used (existing code)
+    "F401",   # imported but unused (existing code)
+    "F403",   # star imports
+    "F405",   # star imports
+]
