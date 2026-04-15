@@ -1,0 +1,21 @@
+# developer-core/.claudeignore
+
+__pycache__/
+*.pyc
+.venv/
+*.log
+.git/
+node_modules/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+data/
+*.db
+.idea/
+.vscode/
+*.swp
+coverage/
+htmlcov/
+.coverage
+dist/
+build/
