@@ -128,3 +128,14 @@ jobs:
           print(f'   networkx: {networkx.__version__}')
           print(f'   powerlaw: {powerlaw.__version__}')
           "
+
+  keepalive:
+    # Re-enables this scheduled workflow via the GitHub API so it never gets
+    # auto-disabled after 60 days of repository inactivity.
+    # Uses liskin/gh-workflow-keepalive — does NOT create any dummy commits.
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - uses: liskin/gh-workflow-keepalive@v1
